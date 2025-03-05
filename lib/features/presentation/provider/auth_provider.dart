@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tes_gradle/features/domain/entities/user.dart';
 import 'package:tes_gradle/features/domain/usecases/login_user.dart';
 import 'package:tes_gradle/features/domain/usecases/register_user.dart';
+import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
 import 'package:tes_gradle/main.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -36,11 +38,26 @@ class AuthProvider with ChangeNotifier {
       _email = user.email;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MyHomePage()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
       return user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        _setError('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        _setError('Wrong password provided.');
+      } else {
+        _setError('Error: ${e.message}');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_errorMessage ?? 'An error occurred')),
+      );
+      rethrow;
     } catch (e) {
       _setError(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_errorMessage ?? 'An error occurred')),
+      );
       rethrow;
     } finally {
       _setLoading(false);
