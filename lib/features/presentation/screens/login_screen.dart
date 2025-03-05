@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
+import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -74,22 +76,28 @@ class _LoginScreenState extends State<LoginScreen> {
       final name = user.name;
 
       // Lanjutkan dengan navigasi atau operasi lainnya
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const NotesScreen()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
 
       // Kamu bisa menyimpan NIK dan nama ke shared preferences atau state management lain jika perlu
       // Contoh:
       // await saveUserData(nomerIndukKependudukan, name);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 }
