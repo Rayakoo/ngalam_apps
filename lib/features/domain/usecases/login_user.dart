@@ -1,5 +1,3 @@
-
-
 import 'package:tes_gradle/core/usecases.dart';
 
 import 'package:tes_gradle/features/domain/entities/user.dart';
@@ -23,8 +21,5 @@ class LoginParams {
   final String email;
   final String password;
 
-  const LoginParams({
-    required this.email,
-    required this.password,
-  });
+  const LoginParams({required this.email, required this.password});
 }

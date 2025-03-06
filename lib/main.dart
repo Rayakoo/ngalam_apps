@@ -12,9 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   di.setupDependencyInjection();
 
@@ -24,18 +22,14 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(
-            loginUser: di.sl(),
-            registerUser: di.sl(),
-          ),
+          create:
+              (_) => AuthProvider(loginUser: di.sl(), registerUser: di.sl()),
         ),
-        
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -66,11 +60,8 @@ class MyApp extends StatelessWidget {
             );
           },
         ),
-        routes: {
-          '/register': (context) => const RegisterScreen(),
-        },
+        routes: {'/register': (context) => const RegisterScreen()},
       ),
-      
     );
   }
 }
