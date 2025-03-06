@@ -20,44 +20,368 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Email"),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: "Password"),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: "Name"),
-            ),
-            TextField(
-              controller: _nomer_induk_kependudukanController,
-              decoration: const InputDecoration(labelText: "NIK"),
-            ),
-            const SizedBox(height: 20),
-            if (_isLoading)
-              const CircularProgressIndicator()
-            else
-              ElevatedButton(
-                onPressed: _register,
-                child: const Text("Register"),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Color(0xFFCCE1F0), // Light blue background
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Top wavy shape
+              Container(
+                width: double.infinity,
+                height: 150,
+                color: Colors.white, // Light blue background
               ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Already have an account? Login"),
-            ),
-          ],
+
+              // Register content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      'Daftar',
+                      style: TextStyle(
+                        color: Color(0xFF1F4D6B),
+                        fontSize: 31,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        height: 1.24,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+                    // Subtitle
+                    Text(
+                      'Mari Bergabung!',
+                      style: TextStyle(
+                        color: Color(0xFF1F4D6B),
+                        fontSize: 21,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w400,
+                        height: 1.31,
+                      ),
+                    ),
+                    SizedBox(height: 25),
+
+                    // Nama Pengguna field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nama Pengguna',
+                          style: TextStyle(
+                            color: Color(0xFF1F4D6B),
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                            height: 1.21,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          width: 331,
+                          height: 37,
+                          padding: const EdgeInsets.all(8),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: Color(0xFFA4CAE4),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              hintText: 'Nama Panjang',
+                              hintStyle: TextStyle(
+                                color: Color(0xFFBCBCBC),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 8),
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: Color(0xFFBCBCBC),
+                                size: 16,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+
+                    // NIK field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nomor Induk Kependudukan (NIK)',
+                          style: TextStyle(
+                            color: Color(0xFF1F4D6B),
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                            height: 1.21,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          width: 331,
+                          height: 37,
+                          padding: const EdgeInsets.all(8),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: Color(0xFFA4CAE4),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _nomer_induk_kependudukanController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: 'Nomor Induk Kependudukan',
+                              hintStyle: TextStyle(
+                                color: Color(0xFFBCBCBC),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 8),
+                              prefixIcon: Icon(
+                                Icons.credit_card,
+                                color: Color(0xFFBCBCBC),
+                                size: 16,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+
+                    // Email field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            color: Color(0xFF1F4D6B),
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                            height: 1.21,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          width: 331,
+                          height: 37,
+                          padding: const EdgeInsets.all(8),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: Color(0xFFA4CAE4),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              hintText: 'Email',
+                              hintStyle: TextStyle(
+                                color: Color(0xFFBCBCBC),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 8),
+                              prefixIcon: Icon(
+                                Icons.email_outlined,
+                                color: Color(0xFFBCBCBC),
+                                size: 16,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+
+                    // Password field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Kata sandi',
+                          style: TextStyle(
+                            color: Color(0xFF1F4D6B),
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                            height: 1.21,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          width: 331,
+                          height: 37,
+                          padding: const EdgeInsets.all(8),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: Color(0xFFA4CAE4),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintText: 'Kata sandi',
+                              hintStyle: TextStyle(
+                                color: Color(0xFFBCBCBC),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 8),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: Color(0xFFBCBCBC),
+                                size: 16,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 25),
+
+                    // Register button
+                    Container(
+                      width: 331,
+                      height: 36,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: ShapeDecoration(
+                        color: Color(0xFF2A6892),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _register,
+                        child: Text(
+                          'Daftar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                            height: 1.50,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 0,
+                          ), // Adjust padding to fit text
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Login link
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Sudah memiliki akun? ',
+                            style: TextStyle(
+                              color: Color(0xFF1E4C6A),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Color(0xFF2A6892),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 12),
+
+                    // Terms and privacy policy
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Dengan membuat akun, Anda menyetujui Ketentuan dan Kebijakan Privasi kami',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF1E4C6A),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Bottom city skyline placeholder
+                    Container(
+                      width: double.infinity,
+                      height: 80,
+                      child: Center(
+                        child: Text(
+                          "City Skyline Image",
+                          style: TextStyle(color: Color(0xFF1E4C6A)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -65,11 +389,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<bool> _nikExists(String nik) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('nomer_induk_kependudukan', isEqualTo: nik)
-          .limit(1)
-          .get();
+      final querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('nomer_induk_kependudukan', isEqualTo: nik)
+              .limit(1)
+              .get();
       return querySnapshot.docs.isNotEmpty;
     } on FirebaseException catch (e) {
       // Handle Firebase exceptions (e.g., network issues) appropriately
@@ -78,8 +403,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-
   Future<void> _register() async {
+    if (!mounted) return; // Check if the widget is still mounted
     setState(() => _isLoading = true);
 
     final email = _emailController.text;
@@ -89,17 +414,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // Validate NIK
     if (nik.length != 16 || !RegExp(r'^\d{16}$').hasMatch(nik)) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('NIK must be a 16-digit number.')));
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('NIK must be a 16-digit number.')),
+        );
+      }
       return;
     }
 
     // Validate name
     if (name.isEmpty) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Name cannot be empty.')));
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Name cannot be empty.')));
+      }
       return;
     }
 
@@ -114,31 +445,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final nikExists = await _nikExists(nik);
 
       if (nikExists) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('NIK already exists.')));
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('NIK already exists.')));
+        }
         return;
       }
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-                email: user.email, password: user.password);
+              email: user.email,
+              password: user.password,
+            );
 
         await transaction.set(
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(userCredential.user!.uid),
-            {
-              'nomer_induk_kependudukan': user.nomer_induk_kependudukan,
-              'name': user.name,
-              'email': user.email,
-            });
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(userCredential.user!.uid),
+          {
+            'nomer_induk_kependudukan': user.nomer_induk_kependudukan,
+            'name': user.name,
+            'email': user.email,
+          },
+        );
       });
 
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')));
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
       if (e.code == 'weak-password') {
@@ -148,15 +488,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         errorMessage = 'Error creating user: ${e.code}';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.message ?? e.toString()}')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.message ?? e.toString()}')),
+        );
+      }
     } on Exception catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${e.toString()}')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 }
