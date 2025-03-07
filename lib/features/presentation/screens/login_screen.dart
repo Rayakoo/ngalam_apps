@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
-import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/register_screen.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
         ), // Background putih (full layar)
         child: Stack(
           children: [
@@ -44,7 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Center(
                     child: Text(
                       "Character Image",
-                      style: TextStyle(color: Colors.grey),
+                      style: AppTextStyles.paragraph_14_regular.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
@@ -59,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFFCCE1F0), // Light blue background
+                  color: AppColors.cce1f0, // Light blue background
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: Padding(
@@ -71,12 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Login title
                         Text(
                           'Login',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 31,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.24,
+                          style: AppTextStyles.heading_2_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 10),
@@ -84,12 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Subtitle
                         Text(
                           'Masuk untuk Mulai',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 21,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                            height: 1.31,
+                          style: AppTextStyles.heading_4_regular.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 30),
@@ -100,12 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Text(
                               'Email',
-                              style: TextStyle(
-                                color: Color(0xFF1F4D6B),
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                height: 1.21,
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
+                                color: AppColors.c1f4d6b,
                               ),
                             ),
                             SizedBox(height: 4),
@@ -114,11 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 37,
                               padding: const EdgeInsets.all(8),
                               decoration: ShapeDecoration(
-                                color: Colors.white,
+                                color: AppColors.white,
                                 shape: RoundedRectangleBorder(
                                   side: BorderSide(
                                     width: 1,
-                                    color: Color(0xFFA4CAE4),
+                                    color: AppColors.a4cbe5,
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -127,11 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   hintText: 'Email',
-                                  hintStyle: TextStyle(
-                                    color: Color(0xFFBCBCBC),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                  hintStyle: AppTextStyles.paragraph_14_regular
+                                      .copyWith(color: Color(0xFFBCBCBC)),
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 8,
                                   ),
@@ -154,12 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Text(
                               'Kata Sandi',
-                              style: TextStyle(
-                                color: Color(0xFF1F4D6B),
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                height: 1.21,
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
+                                color: AppColors.c1f4d6b,
                               ),
                             ),
                             SizedBox(height: 4),
@@ -168,11 +153,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 37,
                               padding: const EdgeInsets.all(8),
                               decoration: ShapeDecoration(
-                                color: Colors.white,
+                                color: AppColors.white,
                                 shape: RoundedRectangleBorder(
                                   side: BorderSide(
                                     width: 1,
-                                    color: Color(0xFFA4CAE4),
+                                    color: AppColors.a4cbe5,
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -182,11 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 obscureText: true,
                                 decoration: InputDecoration(
                                   hintText: 'Kata sandi',
-                                  hintStyle: TextStyle(
-                                    color: Color(0xFFBCBCBC),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                  hintStyle: AppTextStyles.paragraph_14_regular
+                                      .copyWith(color: Color(0xFFBCBCBC)),
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 8,
                                   ),
@@ -209,12 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.only(top: 10),
                             child: Text(
                               'Lupa kata Sandi?',
-                              style: TextStyle(
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
                                 color: Color(0xFFFF0000),
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                height: 1.50,
                               ),
                             ),
                           ),
@@ -227,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 36,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: ShapeDecoration(
-                            color: Color(0xFF2A6892),
+                            color: AppColors.c2a6892,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -236,12 +214,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _login,
                             child: Text(
                               'Masuk',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                height: 1.50,
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
+                                color: AppColors.white,
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
@@ -265,42 +239,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text(
                                 'Belum memiliki akun? ',
-                                style: TextStyle(
-                                  color: Color(0xFF1F4D6B),
-                                  fontSize: 14,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.50,
-                                ),
+                                style: AppTextStyles.paragraph_14_medium
+                                    .copyWith(color: AppColors.c1f4d6b),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => const RegisterScreen(),
-                                    ),
-                                  );
+                                  context.go(AppRoutes.register);
                                 },
                                 child: Text(
                                   'Daftar',
-                                  style: TextStyle(
-                                    color: Color(0xFF2A6892),
-                                    fontSize: 14,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.underline,
-                                    height: 1.50,
-                                  ),
+                                  style: AppTextStyles.paragraph_14_medium
+                                      .copyWith(
+                                        color: AppColors.c2a6892,
+                                        decoration: TextDecoration.underline,
+                                      ),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(height: 20), // Add some space before the image
-                       
-
                         // Tambahkan space untuk memastikan scrolling aman
                         SizedBox(height: 20),
                       ],
@@ -336,10 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Lanjutkan dengan navigasi atau operasi lainnya
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+        context.go(AppRoutes.homepage);
       }
 
       // Kamu bisa menyimpan NIK dan nama ke shared preferences atau state management lain jika perlu

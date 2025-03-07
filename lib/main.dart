@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
+import 'package:tes_gradle/features/presentation/router/approuter.dart';
+import 'package:tes_gradle/features/presentation/style/theme.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'features/presentation/screens/login_screen.dart';
-import 'features/presentation/screens/register_screen.dart';
 import 'features/presentation/provider/auth_provider.dart';
 import 'di/injetion_container.dart' as di;
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,36 +29,13 @@ class MyApp extends StatelessWidget {
               (_) => AuthProvider(loginUser: di.sl(), registerUser: di.sl()),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Informal Study Jam Eps.2',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: Consumer<AuthProvider>(
-          builder: (context, authProvider, _) {
-            return StreamBuilder<firebase_auth.User?>(
-              stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return const Scaffold(
-                    body: Center(child: Text('Something went wrong!')),
-                  );
-                }
-                final user = snapshot.data;
-                if (user != null) {
-                  return const HomeScreen();
-                } else {
-                  return const LoginScreen();
-                }
-              },
-            );
-          },
-        ),
-        routes: {'/register': (context) => const RegisterScreen()},
+        theme: AppThemes.getTheme(),
+        routeInformationProvider: AppRouter.router.routeInformationProvider,
+        routeInformationParser: AppRouter.router.routeInformationParser,
+        routerDelegate: AppRouter.router.routerDelegate,
       ),
     );
   }
