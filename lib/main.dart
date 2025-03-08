@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'features/presentation/screens/login_screen.dart';
 import 'features/presentation/screens/register_screen.dart';
 import 'features/presentation/provider/auth_provider.dart';
+import 'features/presentation/screens/welcome_page.dart';
 import 'di/injetion_container.dart' as di;
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
                 if (user != null) {
                   return const HomeScreen();
                 } else {
-                  return const LoginScreen();
+                  return const WelcomePage();
                 }
               },
             );
