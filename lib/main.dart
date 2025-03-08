@@ -5,6 +5,7 @@ import 'package:tes_gradle/features/presentation/style/theme.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'features/presentation/provider/auth_provider.dart';
+import 'features/presentation/screens/welcome_page.dart';
 import 'di/injetion_container.dart' as di;
 
 void main() async {
@@ -32,10 +33,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Informal Study Jam Eps.2',
+
         theme: AppThemes.getTheme(),
         routeInformationProvider: AppRouter.router.routeInformationProvider,
         routeInformationParser: AppRouter.router.routeInformationParser,
         routerDelegate: AppRouter.router.routerDelegate,
+
       ),
     );
   }

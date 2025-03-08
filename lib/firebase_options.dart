@@ -57,8 +57,8 @@ class DefaultFirebaseOptions {
     appId: '1:315510739198:android:16a906b6eb1fb6473415af',
     messagingSenderId: '315510739198',
     projectId: 'raion-ngalam',
-    databaseURL:
-        'https://raion-ngalam-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://raion-ngalam-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'raion-ngalam.firebasestorage.app',
   );
+
 }
