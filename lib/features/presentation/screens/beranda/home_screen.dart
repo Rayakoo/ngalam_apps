@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,7 +28,7 @@ class HomeScreen extends StatelessWidget {
               // Logout user
               await firebase_auth.FirebaseAuth.instance.signOut();
               // Navigate to the Login Screen after logout
-              Navigator.pushReplacementNamed(context, '/');
+              context.go('/');
             },
           ),
         ],
@@ -65,6 +67,36 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_run),
+            label: 'Activity',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Homepage'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notification',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go(AppRoutes.activity);
+              break;
+            case 1:
+              context.go(AppRoutes.homepage);
+              break;
+            case 2:
+              context.go(AppRoutes.notification);
+              break;
+            case 3:
+              context.go(AppRoutes.profile);
+              break;
+          }
         },
       ),
     );
