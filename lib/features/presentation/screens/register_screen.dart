@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tes_gradle/features/domain/entities/user.dart';
+import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -24,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: Color(0xFFCCE1F0), // Light blue background
+          color: AppColors.cce1f0, // Light blue background
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -33,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Container(
                 width: double.infinity,
                 height: 150,
-                color: Colors.white, // Light blue background
+                color: AppColors.white, // Light blue background
               ),
 
               // Register content
@@ -45,12 +49,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     // Title
                     Text(
                       'Daftar',
-                      style: TextStyle(
-                        color: Color(0xFF1F4D6B),
-                        fontSize: 31,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
-                        height: 1.24,
+                      style: AppTextStyles.heading_2_medium.copyWith(
+                        color: AppColors.c1f4d6b,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -58,12 +58,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     // Subtitle
                     Text(
                       'Mari Bergabung!',
-                      style: TextStyle(
-                        color: Color(0xFF1F4D6B),
-                        fontSize: 21,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w400,
-                        height: 1.31,
+                      style: AppTextStyles.heading_4_regular.copyWith(
+                        color: AppColors.c1f4d6b,
                       ),
                     ),
                     SizedBox(height: 25),
@@ -74,12 +70,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Text(
                           'Nama Pengguna',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.21,
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -88,11 +80,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 37,
                           padding: const EdgeInsets.all(8),
                           decoration: ShapeDecoration(
-                            color: Colors.white,
+                            color: AppColors.white,
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
                                 width: 1,
-                                color: Color(0xFFA4CAE4),
+                                color: AppColors.a4cbe5,
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -101,11 +93,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: _nameController,
                             decoration: InputDecoration(
                               hintText: 'Nama Panjang',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFBCBCBC),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
+                              hintStyle: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: Color(0xFFBCBCBC)),
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                               prefixIcon: Icon(
                                 Icons.person_outline,
@@ -126,12 +115,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Text(
                           'Nomor Induk Kependudukan (NIK)',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.21,
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -140,11 +125,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 37,
                           padding: const EdgeInsets.all(8),
                           decoration: ShapeDecoration(
-                            color: Colors.white,
+                            color: AppColors.white,
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
                                 width: 1,
-                                color: Color(0xFFA4CAE4),
+                                color: AppColors.a4cbe5,
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -154,11 +139,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               hintText: 'Nomor Induk Kependudukan',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFBCBCBC),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
+                              hintStyle: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: Color(0xFFBCBCBC)),
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                               prefixIcon: Icon(
                                 Icons.credit_card,
@@ -179,12 +161,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Text(
                           'Email',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.21,
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -193,11 +171,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 37,
                           padding: const EdgeInsets.all(8),
                           decoration: ShapeDecoration(
-                            color: Colors.white,
+                            color: AppColors.white,
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
                                 width: 1,
-                                color: Color(0xFFA4CAE4),
+                                color: AppColors.a4cbe5,
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -207,11 +185,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: 'Email',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFBCBCBC),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
+                              hintStyle: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: Color(0xFFBCBCBC)),
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                               prefixIcon: Icon(
                                 Icons.email_outlined,
@@ -232,12 +207,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Text(
                           'Kata sandi',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.21,
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -246,11 +217,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 37,
                           padding: const EdgeInsets.all(8),
                           decoration: ShapeDecoration(
-                            color: Colors.white,
+                            color: AppColors.white,
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
                                 width: 1,
-                                color: Color(0xFFA4CAE4),
+                                color: AppColors.a4cbe5,
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -260,11 +231,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             obscureText: true,
                             decoration: InputDecoration(
                               hintText: 'Kata sandi',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFBCBCBC),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
+                              hintStyle: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: Color(0xFFBCBCBC)),
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
@@ -285,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       height: 36,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: ShapeDecoration(
-                        color: Color(0xFF2A6892),
+                        color: AppColors.c2a6892,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -294,12 +262,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: _register,
                         child: Text(
                           'Daftar',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.50,
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: AppColors.white,
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -324,22 +288,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             'Sudah memiliki akun? ',
-                            style: TextStyle(
-                              color: Color(0xFF1E4C6A),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                            style: AppTextStyles.paragraph_14_regular.copyWith(
+                              color: AppColors.c1f4d6b,
                             ),
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              context.go(AppRoutes.auth);
                             },
                             child: Text(
                               'Login',
-                              style: TextStyle(
-                                color: Color(0xFF2A6892),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
+                                color: AppColors.c2a6892,
                                 decoration: TextDecoration.underline,
                               ),
                             ),
@@ -356,10 +316,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           'Dengan membuat akun, Anda menyetujui Ketentuan dan Kebijakan Privasi kami',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF1E4C6A),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                          style: AppTextStyles.paragraph_10_regular.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                       ),
@@ -373,7 +331,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Center(
                         child: Text(
                           "City Skyline Image",
-                          style: TextStyle(color: Color(0xFF1E4C6A)),
+                          style: AppTextStyles.paragraph_14_regular.copyWith(
+                            color: AppColors.c1f4d6b,
+                          ),
                         ),
                       ),
                     ),
@@ -474,9 +434,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       if (mounted) {
-        Navigator.pop(context);
+        await FirebaseAuth.instance.signOut(); // Sign out the user
+        context.go(AppRoutes.auth); // Navigate to login screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
+          const SnackBar(content: Text('Registration successful! ')),
         );
       }
     } on FirebaseAuthException catch (e) {

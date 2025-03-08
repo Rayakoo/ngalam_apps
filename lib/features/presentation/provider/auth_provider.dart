@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tes_gradle/features/domain/entities/user.dart';
 import 'package:tes_gradle/features/domain/usecases/login_user.dart';
 import 'package:tes_gradle/features/domain/usecases/register_user.dart';
-import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
 import 'package:tes_gradle/main.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -36,10 +37,7 @@ class AuthProvider with ChangeNotifier {
       _nomer_induk_kependudukan = user.nomer_induk_kependudukan;
       _name = user.name;
       _email = user.email;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+      context.go('/home');
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

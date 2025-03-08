@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
-import 'package:tes_gradle/features/presentation/screens/home_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/register_screen.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,8 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-        ),
+
+          color: AppColors.white,
+        ), // Background putih (full layar)
+
         child: Stack(
           children: [
             Positioned(
@@ -36,10 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
               height: screenHeight * 0.5,
               child: Container(
                 alignment: Alignment.center,
+
                 child: Image.asset(
                   'assets/images/orang-login.png',
                   width: 811,
                   height: 920,
+
                 ),
               ),
             ),
@@ -50,7 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFFCCE1F0),
+
+                  color: AppColors.cce1f0, // Light blue background
+
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: Padding(
@@ -61,52 +69,45 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'Login',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 31,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            height: 1.24,
+                          style: AppTextStyles.heading_2_medium.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 10),
                         Text(
                           'Masuk untuk Mulai',
-                          style: TextStyle(
-                            color: Color(0xFF1F4D6B),
-                            fontSize: 21,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                            height: 1.31,
+                          style: AppTextStyles.heading_4_regular.copyWith(
+                            color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 30),
+
                         _buildTextField('Email', _emailController, false, Icons.email_outlined),
                         SizedBox(height: 18),
                         _buildTextField('Kata Sandi', _passwordController, true, Icons.lock_outline),
+
                         Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
                             padding: EdgeInsets.only(top: 10),
                             child: Text(
                               'Lupa kata Sandi?',
-                              style: TextStyle(
+                              style: AppTextStyles.paragraph_14_medium.copyWith(
                                 color: Color(0xFFFF0000),
-                                fontSize: 14,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                height: 1.50,
                               ),
                             ),
                           ),
                         ),
                         SizedBox(height: 30),
+
                         _buildLoginButton(),
+
                         SizedBox(height: 20),
                         Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+
                               Text('Belum memiliki akun? '),
                               GestureDetector(
                                 onTap: () {
@@ -136,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 120,
                           fit: BoxFit.contain,
                         ),
+
                       ],
                     ),
                   ),
@@ -216,7 +218,8 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final user = await Provider.of<AuthProvider>(context, listen: false).login(email, password, context);
       if (mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        context.go(AppRoutes.homepage);
+
       }
     } catch (e) {
       if (mounted) {
