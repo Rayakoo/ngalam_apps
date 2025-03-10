@@ -27,7 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-
           color: AppColors.white,
         ), // Background putih (full layar)
 
@@ -45,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   'assets/images/orang-login.png',
                   width: 811,
                   height: 920,
-
                 ),
               ),
             ),
@@ -56,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: 0,
               child: Container(
                 decoration: BoxDecoration(
-
                   color: AppColors.cce1f0, // Light blue background
 
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -82,9 +79,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: 30),
 
-                        _buildTextField('Email', _emailController, false, Icons.email_outlined),
+                        _buildTextField(
+                          'Email',
+                          _emailController,
+                          false,
+                          Icons.email_outlined,
+                        ),
                         SizedBox(height: 18),
-                        _buildTextField('Kata Sandi', _passwordController, true, Icons.lock_outline),
+                        _buildTextField(
+                          'Kata Sandi',
+                          _passwordController,
+                          true,
+                          Icons.lock_outline,
+                        ),
 
                         Align(
                           alignment: Alignment.centerRight,
@@ -107,16 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-
                               Text('Belum memiliki akun? '),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const RegisterScreen(),
-                                    ),
-                                  );
+                                  context.go(AppRoutes.register);
                                 },
                                 child: Text(
                                   'Daftar',
@@ -137,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 120,
                           fit: BoxFit.contain,
                         ),
-
                       ],
                     ),
                   ),
@@ -150,7 +150,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, bool isObscure, IconData icon) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    bool isObscure,
+    IconData icon,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -194,9 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFF2A6892),
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
       child: Center(
         child: Text(
@@ -216,14 +219,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     try {
-      final user = await Provider.of<AuthProvider>(context, listen: false).login(email, password, context);
+      final user = await Provider.of<AuthProvider>(
+        context,
+        listen: false,
+      ).login(email, password, context);
       if (mounted) {
         context.go(AppRoutes.homepage);
-
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     } finally {
       if (mounted) {

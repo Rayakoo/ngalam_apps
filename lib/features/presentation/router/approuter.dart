@@ -9,6 +9,7 @@ import '../screens/login_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:tes_gradle/features/presentation/screens/splash/splash_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/welcome_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -39,16 +40,16 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          print('Navigating to SplashScreen');
-          return const SplashScreen();
+          print('Navigating to WelcomePage');
+          return const WelcomePage();
         },
       ),
       GoRoute(
         path: AppRoutes.splash,
         name: 'splash',
         builder: (BuildContext context, GoRouterState state) {
-          print('Navigating to SplashScreen');
-          return const SplashScreen();
+          print('Navigating to WelcomePage');
+          return const WelcomePage();
         },
       ),
       GoRoute(

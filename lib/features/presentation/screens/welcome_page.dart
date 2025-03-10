@@ -1,5 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,12 +34,14 @@ class _WelcomePageState extends State<WelcomePage> {
   final List<Map<String, String>> slides = [
     {
       "title": "Selamat datang!",
-      "description": "Apps hadir untuk membuat kota lebih aman, nyaman, dan responsif. Dengan bergabung bersama kami, Anda dapat berkontribusi menjaga lingkungan sekitar dengan mudah."
+      "description":
+          "Apps hadir untuk membuat kota lebih aman, nyaman, dan responsif. Dengan bergabung bersama kami, Anda dapat berkontribusi menjaga lingkungan sekitar dengan mudah.",
     },
     {
       "title": "Jelajahi Fitur Kami!",
-      "description": "Kami menyediakan akses CCTV untuk memantau kota, fitur pelaporan untuk melaporkan kerusakan fasilitas, serta layanan darurat yang siap dihubungi kapan saja. Semua dalam satu aplikasi untuk kenyamanan Anda."
-    }
+      "description":
+          "Kami menyediakan akses CCTV untuk memantau kota, fitur pelaporan untuk melaporkan kerusakan fasilitas, serta layanan darurat yang siap dihubungi kapan saja. Semua dalam satu aplikasi untuk kenyamanan Anda.",
+    },
   ];
 
   void _nextPage() {
@@ -45,6 +50,8 @@ class _WelcomePageState extends State<WelcomePage> {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
+    } else {
+      context.go(AppRoutes.auth);
     }
   }
 
@@ -158,7 +165,10 @@ class _WelcomePageState extends State<WelcomePage> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[200],
-                        padding: const EdgeInsets.symmetric(horizontal: 150, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 150,
+                          vertical: 10,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -166,7 +176,10 @@ class _WelcomePageState extends State<WelcomePage> {
                       onPressed: _nextPage,
                       child: Text(
                         _currentPage == slides.length - 1 ? "Mulai" : "Lanjut",
-                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),

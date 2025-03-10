@@ -1,5 +1,5 @@
 class AppRoutes {
-  static const String splash = '/';
+  static const String splash = '/welcome';
   static const String activity = '/activity';
   static const String homepage = '/homepage';
   static const String notification = '/notification';
