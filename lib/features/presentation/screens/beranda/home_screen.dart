@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tes_gradle/features/presentation/router/approutes.dart';
-import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
+import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,48 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return const Center(child: Text('Something went wrong!'));
-          }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Center(child: Text('User data not found.'));
-          }
-
-          final userData = snapshot.data!.data() as Map<String, dynamic>;
-          final name = userData['name'] ?? 'No name';
-          final nomerIndukKependudukan =
-              userData['nomer_induk_kependudukan'] ?? 'No NIK';
-          final email = user.email ?? 'No email';
-
-          return IndexedStack(
-            index: _selectedIndex,
-            children: [
-              ActivityScreen(),
-              Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Name: $name", style: const TextStyle(fontSize: 18)),
-                    Text(
-                      "NIK: $nomerIndukKependudukan",
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    Text("Email: $email", style: const TextStyle(fontSize: 18)),
-                  ],
-                ),
-              ),
-              NotificationScreen(),
-              ProfileScreen(),
-            ],
-          );
-        },
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: const [
+          ActivityScreen(),
+          Center(child: Text("Welcome to the Home Page!")),
+          NotificationScreen(),
+          ProfileScreen(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: true,

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
-import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/send_otp_email_screen.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPassScreen extends StatefulWidget {
+  const ForgotPassScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _ForgotPassScreenState createState() => _ForgotPassScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPassScreenState extends State<ForgotPassScreen> {
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -39,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
               height: screenHeight * 0.5,
               child: Container(
                 alignment: Alignment.center,
-
                 child: Image.asset(
                   'assets/images/orang-login.png',
                   width: 811,
@@ -55,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.cce1f0, // Light blue background
-
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: Padding(
@@ -65,14 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Login',
+                          'Forgot Password',
                           style: AppTextStyles.heading_2_medium.copyWith(
                             color: AppColors.c1f4d6b,
                           ),
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Masuk untuk Mulai',
+                          'Enter your email to reset your password',
                           style: AppTextStyles.heading_4_regular.copyWith(
                             color: AppColors.c1f4d6b,
                           ),
@@ -85,42 +83,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           false,
                           Icons.email_outlined,
                         ),
-                        SizedBox(height: 18),
-                        _buildTextField(
-                          'Kata Sandi',
-                          _passwordController,
-                          true,
-                          Icons.lock_outline,
-                        ),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text(
-                              'Lupa kata Sandi?',
-                              style: AppTextStyles.paragraph_14_medium.copyWith(
-                                color: Color(0xFFFF0000),
-                              ),
-                            ),
-                          ),
-                        ),
                         SizedBox(height: 30),
 
-                        _buildLoginButton(),
+                        _buildResetButton(),
 
                         SizedBox(height: 20),
                         Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Belum memiliki akun? '),
+                              Text('Remember your password? '),
                               GestureDetector(
                                 onTap: () {
-                                  context.go(AppRoutes.register);
+                                  context.go(AppRoutes.auth);
                                 },
                                 child: Text(
-                                  'Daftar',
+                                  'Login',
                                   style: TextStyle(
                                     color: Color(0xFF2A6892),
                                     fontWeight: FontWeight.bold,
@@ -193,9 +171,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildResetButton() {
     return ElevatedButton(
-      onPressed: _login,
+      onPressed: _resetPassword,
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFF2A6892),
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -203,41 +181,46 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: Center(
         child: Text(
-          'Masuk',
+          'Reset Password',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 
-  Future<void> _login() async {
+  Future<void> _resetPassword() async {
     setState(() {
       _isLoading = true;
     });
 
     final email = _emailController.text;
-    final password = _passwordController.text;
 
     try {
-      final user = await Provider.of<AuthProvider>(
+      // Panggil fungsi forgotPasswordEmail dari AuthProvider
+      await Provider.of<AuthProvider>(
         context,
         listen: false,
-      ).login(email, password, context);
-      if (mounted) {
-        context.go(AppRoutes.homepage);
-      }
-    } catch (e) {
-      if (mounted) {
+      ).forgotPasswordEmail(email, context);
+      // Tampilkan pesan sukses jika berhasil
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Password reset email sent. scrreen')),
+      // );
+    } on Exception catch (e) {
+      if (e.toString().contains('No user found for that email')) {
+        // Tampilkan pesan error jika akun tidak ada
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(const SnackBar(content: Text('Account not found.')));
+      } else {
+        // Tampilkan pesan error jika terjadi kesalahan lain
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

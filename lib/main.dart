@@ -27,18 +27,23 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create:
-              (_) => AuthProvider(loginUser: di.sl(), registerUser: di.sl()),
+              (_) => AuthProvider(
+                loginUser: di.sl(),
+                registerUser: di.sl(),
+                forgotPassword: di.sl(),
+                sendOtp: di.sl(),
+                verifyOtp: di.sl(),
+                accountExists: di.sl(),
+              ),
         ),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Informal Study Jam Eps.2',
-
         theme: AppThemes.getTheme(),
         routeInformationProvider: AppRouter.router.routeInformationProvider,
         routeInformationParser: AppRouter.router.routeInformationParser,
         routerDelegate: AppRouter.router.routerDelegate,
-
       ),
     );
   }

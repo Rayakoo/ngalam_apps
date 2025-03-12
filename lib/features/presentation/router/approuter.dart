@@ -5,11 +5,15 @@ import 'package:tes_gradle/features/presentation/screens/activity/activity_scree
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
 import '../screens/beranda/home_screen.dart';
-import '../screens/login_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/register_screen.dart';
+import '../screens/authentication/login_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:tes_gradle/features/presentation/screens/splash/splash_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/welcome_page.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/forgot_pass_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/send_otp_email_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/verify_otp_email_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/reset_password_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -17,7 +21,12 @@ class AppRouter {
     redirect: (BuildContext context, GoRouterState state) {
       final user = firebase_auth.FirebaseAuth.instance.currentUser;
       final loggingIn =
-          state.subloc == AppRoutes.auth || state.subloc == AppRoutes.register;
+          state.subloc == AppRoutes.auth ||
+          state.subloc == AppRoutes.register ||
+          state.subloc == AppRoutes.forgotPassword ||
+          state.subloc == AppRoutes.sendOtpEmail ||
+          state.subloc == AppRoutes.verifyOtpEmail ||
+          state.subloc == AppRoutes.resetPassword;
       final isSplash = state.subloc == AppRoutes.splash;
 
       // Debug print statements to see the current route and the redirected route
@@ -98,6 +107,40 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           print('Navigating to RegisterScreen');
           return const RegisterScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        name: 'forgotPassword',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to ForgotPassScreen');
+          return const ForgotPassScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.sendOtpEmail,
+        name: 'sendOtpEmail',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to SendOTPEmailScreen');
+          return SendOTPEmailScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.verifyOtpEmail,
+        name: 'verifyOtpEmail',
+        builder: (BuildContext context, GoRouterState state) {
+          final email = state.extra as String;
+          print('Navigating to VerifyOTPEmailScreen');
+          return VerifyOTPEmailScreen(email: email);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        name: 'resetPassword',
+        builder: (BuildContext context, GoRouterState state) {
+          final email = state.extra as String;
+          print('Navigating to ResetPasswordScreen');
+          return ResetPasswordScreen(email: email);
         },
       ),
     ],
