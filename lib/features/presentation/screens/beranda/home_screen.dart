@@ -51,7 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+        future:
+            FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -65,7 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final userData = snapshot.data!.data() as Map<String, dynamic>;
           final name = userData['name'] ?? 'No name';
-          final nomerIndukKependudukan = userData['nomer_induk_kependudukan'] ?? 'No NIK';
+          final nomerIndukKependudukan =
+              userData['nomer_induk_kependudukan'] ?? 'No NIK';
           final email = user.email ?? 'No email';
 
           return IndexedStack(
@@ -102,18 +104,12 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.directions_run),
             label: 'Activity',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Homepage',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Homepage'),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
             label: 'Notification',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
