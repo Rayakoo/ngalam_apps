@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tes_gradle/features/domain/entities/laporan.dart';
+import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 
@@ -13,6 +16,10 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   bool _isAnonymityChecked = false;
   bool _isLocationSame = false;
   String _selectedCategory = '';
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _keteranganController = TextEditingController();
+  final TextEditingController _lokasiController = TextEditingController();
+  final TextEditingController _fotoController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +47,18 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              _buildTextField('Judul Laporan', 'Judul Laporan (60 kata)', 60),
+              _buildTextField(
+                'Judul Laporan',
+                'Judul Laporan (60 kata)',
+                60,
+                _judulController,
+              ),
               const SizedBox(height: 16),
               _buildTextField(
                 'Keterangan Laporan',
                 'Keterangan Laporan',
                 null,
+                _keteranganController,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
@@ -107,7 +120,8 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   Widget _buildTextField(
     String label,
     String hintText,
-    int? maxLength, {
+    int? maxLength,
+    TextEditingController controller, {
     int maxLines = 1,
   }) {
     return Column(
@@ -131,6 +145,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
             ),
           ),
           child: TextField(
+            controller: controller,
             maxLength: maxLength,
             maxLines: maxLines,
             decoration: InputDecoration(
@@ -169,6 +184,11 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
               onChanged: (value) {
                 setState(() {
                   _isLocationSame = value;
+                  if (value) {
+                    _lokasiController.text = 'Lokasi Sekarang';
+                  } else {
+                    _lokasiController.clear();
+                  }
                 });
               },
               activeColor: AppColors.c2a6892,
@@ -189,6 +209,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
                   ),
                 ),
                 child: TextField(
+                  controller: _lokasiController,
                   decoration: InputDecoration(
                     hintText: 'Lokasi Kejadian Laporan',
                     border: InputBorder.none,
@@ -225,7 +246,10 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
           ),
           child: Center(
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                // Simulate photo upload by setting a dummy photo URL
+                _fotoController.text = 'https://example.com/photo.jpg';
+              },
               icon: Icon(Icons.upload_file),
               label: Text('Unggah Foto'),
               style: ElevatedButton.styleFrom(
@@ -284,7 +308,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   Widget _buildSubmitButton() {
     return Center(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: _submitLaporan,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.c2a6892,
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 130),
@@ -298,5 +322,36 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitLaporan() async {
+    final laporan = Laporan(
+      kategoriLaporan: _selectedCategory,
+      judulLaporan: _judulController.text,
+      keteranganLaporan: _keteranganController.text,
+      lokasiKejadian: _lokasiController.text,
+      foto: _fotoController.text,
+      timeStamp: DateTime.now(),
+      status: 'Menunggu',
+      anonymus: _isAnonymityChecked,
+    );
+
+    final laporProvider = Provider.of<LaporProvider>(context, listen: false);
+    await laporProvider.addLaporan(laporan);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Laporan berhasil dikirim!')));
+
+    // Clear the form
+    setState(() {
+      _selectedCategory = '';
+      _judulController.clear();
+      _keteranganController.clear();
+      _lokasiController.clear();
+      _fotoController.clear();
+      _isAnonymityChecked = false;
+      _isLocationSame = false;
+    });
   }
 }

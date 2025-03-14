@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:tes_gradle/features/domain/usecases/create_laporan.dart';
+import 'package:tes_gradle/features/domain/usecases/delete_laporan.dart';
+import 'package:tes_gradle/features/domain/usecases/get_all_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/get_user_data.dart';
+import 'package:tes_gradle/features/domain/usecases/get_user_reports.dart';
+import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
+import 'package:tes_gradle/features/domain/usecases/update_laporan.dart';
 import 'package:tes_gradle/features/presentation/router/approuter.dart';
 import 'package:tes_gradle/features/presentation/style/theme.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'features/presentation/provider/auth_provider.dart';
 import 'features/presentation/provider/user_provider.dart';
+import 'features/presentation/provider/lapor_provider.dart';
 import 'features/presentation/screens/welcome_page.dart';
 import 'features/presentation/screens/beranda/home_screen.dart';
-import 'di/injetion_container.dart' as di;
+import 'di/injetion_container.dart' as di; 
 import 'dart:io';
 
 class MyHttpOverrides extends HttpOverrides {
@@ -54,6 +61,16 @@ void main() async {
                 sendOtp: di.sl(),
                 verifyOtp: di.sl(),
                 accountExists: di.sl(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => LaporProvider(
+                di.sl<CreateLaporan>(),
+                di.sl<ReadLaporan>(),
+                di.sl<UpdateLaporan>(),
+                di.sl<DeleteLaporan>(),
+                di.sl<GetUserReports>(),
               ),
         ),
       ],
