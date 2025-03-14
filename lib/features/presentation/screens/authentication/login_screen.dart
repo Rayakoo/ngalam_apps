@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(height: 4),
         Container(
           width: double.infinity,
-          height: 37,
+          height: 42,
           padding: const EdgeInsets.all(8),
           decoration: ShapeDecoration(
             color: Colors.white,
@@ -228,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
         listen: false,
       ).login(email, password, context);
       if (mounted) {
-        context.go(AppRoutes.homepage);
+        context.go(AppRoutes.navbar);
       }
     } catch (e) {
       if (mounted) {
