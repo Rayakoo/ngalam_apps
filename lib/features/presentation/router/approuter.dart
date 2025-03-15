@@ -4,8 +4,8 @@ import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
-import '../screens/beranda/home_screen.dart';
-import '../screens/authentication/login_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/login_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:tes_gradle/features/presentation/screens/splash/splash_screen.dart';
@@ -14,6 +14,8 @@ import 'package:tes_gradle/features/presentation/screens/authentication/forgot_p
 import 'package:tes_gradle/features/presentation/screens/authentication/send_otp_email_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/verify_otp_email_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/reset_password_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/navbar/navbar_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/beranda/laporek/laporek_bar.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -40,8 +42,8 @@ class AppRouter {
         return AppRoutes.auth;
       }
       if (user != null && loggingIn) {
-        print('Redirecting to: ${AppRoutes.homepage}');
-        return AppRoutes.homepage;
+        print('Redirecting to: ${AppRoutes.navbar}');
+        return AppRoutes.navbar;
       }
       return null;
     },
@@ -141,6 +143,18 @@ class AppRouter {
           final email = state.extra as String;
           print('Navigating to ResetPasswordScreen');
           return ResetPasswordScreen(email: email);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.navbar,
+        builder: (context, state) => const NavbarScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.laporekBar,
+        name: 'laporekBar',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to LaporekBar');
+          return const LaporekBar();
         },
       ),
     ],
