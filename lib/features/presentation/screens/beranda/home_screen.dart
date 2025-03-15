@@ -4,9 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 
-import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
+
+
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';

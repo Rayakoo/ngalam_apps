@@ -6,7 +6,7 @@ class CreateLaporan {
 
   CreateLaporan(this.repository);
 
-  Future<void> call(Laporan laporan) async {
+  Future<Laporan> call(Laporan laporan) async {
     return await repository.createLaporan(laporan);
   }
 }

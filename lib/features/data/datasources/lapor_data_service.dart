@@ -6,7 +6,7 @@ class LaporDataService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> createLaporan(LaporanModel laporan) async {
+  Future<LaporanModel> createLaporan(LaporanModel laporan) async {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
@@ -23,7 +23,14 @@ class LaporDataService {
       await _firestore.collection('users').doc(userId).update({
         'reports': FieldValue.arrayUnion([reportId]),
       });
+      print('Laporan created successfully.');
+
+      return LaporanModel.fromJson(
+        reportData,
+        reportId,
+      ); // Return LaporanModel with ID
     } catch (e) {
+      print('Error creating laporan: $e');
       throw Exception('Error creating laporan: $e');
     }
   }
@@ -33,18 +40,31 @@ class LaporDataService {
       DocumentSnapshot doc =
           await _firestore.collection('laporan').doc(id).get();
       if (doc.exists) {
-        return LaporanModel.fromJson(doc.data() as Map<String, dynamic>);
+        return LaporanModel.fromJson(
+          doc.data() as Map<String, dynamic>,
+          id,
+        ); // Add id here
       }
       return null;
     } catch (e) {
+      print('Error reading laporan: $e');
       throw Exception('Error reading laporan: $e');
     }
   }
 
   Future<void> updateLaporan(String id, LaporanModel laporan) async {
     try {
+      // Add new status entry to statusHistory
+      final newStatusEntry = {
+        'status': laporan.status,
+        'date': FieldValue.serverTimestamp(),
+      };
+      laporan.statusHistory.add(newStatusEntry);
+
       await _firestore.collection('laporan').doc(id).update(laporan.toJson());
+      print('Laporan updated successfully.');
     } catch (e) {
+      print('Error updating laporan: $e');
       throw Exception('Error updating laporan: $e');
     }
   }
@@ -52,7 +72,9 @@ class LaporDataService {
   Future<void> deleteLaporan(String id) async {
     try {
       await _firestore.collection('laporan').doc(id).delete();
+      print('Laporan deleted successfully.');
     } catch (e) {
+      print('Error deleting laporan: $e');
       throw Exception('Error deleting laporan: $e');
     }
   }
@@ -71,15 +93,42 @@ class LaporDataService {
               await _firestore.collection('laporan').doc(reportId).get();
           if (reportDoc.exists) {
             reports.add(
-              LaporanModel.fromJson(reportDoc.data() as Map<String, dynamic>),
+              LaporanModel.fromJson(
+                reportDoc.data() as Map<String, dynamic>,
+                reportId,
+              ), // Add reportId here
             );
           }
         }
+        print('User reports fetched successfully.');
         return reports;
       }
       return [];
     } catch (e) {
+      print('Error getting user reports: $e');
       throw Exception('Error getting user reports: $e');
+    }
+  }
+
+  Future<List<LaporanModel>> getAllLaporan() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore
+              .collection('laporan')
+              .orderBy('timeStamp', descending: true)
+              .get();
+      print('All laporan fetched successfully.');
+      return querySnapshot.docs
+          .map(
+            (doc) => LaporanModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            ), // Add doc.id here
+          )
+          .toList();
+    } catch (e) {
+      print('Error getting all laporan: $e');
+      throw Exception('Error getting all laporan: $e');
     }
   }
 }

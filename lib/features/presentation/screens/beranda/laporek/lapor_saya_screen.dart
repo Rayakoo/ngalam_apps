@@ -326,6 +326,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
 
   Future<void> _submitLaporan() async {
     final laporan = Laporan(
+      id: '',
       kategoriLaporan: _selectedCategory,
       judulLaporan: _judulController.text,
       keteranganLaporan: _keteranganController.text,
@@ -334,6 +335,9 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
       timeStamp: DateTime.now(),
       status: 'Menunggu',
       anonymus: _isAnonymityChecked,
+      statusHistory: [
+        {'status': 'Menunggu', 'date': DateTime.now()},
+      ], 
     );
 
     final laporProvider = Provider.of<LaporProvider>(context, listen: false);

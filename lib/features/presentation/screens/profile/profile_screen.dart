@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart'; // Add this line
+import 'package:tes_gradle/features/presentation/router/approutes.dart'; // Add this line
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,250 +19,160 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('Calling fetchUserData'); // Debug print statement
       Provider.of<UserProvider>(context, listen: false).fetchUserData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = firebase_auth.FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Profile Page")),
-        body: const Center(child: Text("No user is currently logged in.")),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: AppColors.cce1f0,
+      ),
       body: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           if (userProvider.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
-          final userData = userProvider.userData;
-          print('User Data: $userData'); // Debug print statement
-          print(
-            'photoProfile: ${userData?['photoProfile']}',
-          ); // Debug print statement
+          final user = userProvider.userData;
 
           return SingleChildScrollView(
             child: Stack(
               children: [
                 Column(
                   children: [
-                    // Replace AppBar with Container
-                    Container(
-                      height: 140, // Adjust the height as needed
-                      color: AppColors.cce1f0,
-                      child: Center(
-                        child: Text(
-                          'Profile',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    Container(height: 60, color: AppColors.white),
+                    const SizedBox(height: 50),
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        16.0,
-                        80.0,
-                        16.0,
-                        16.0,
-                      ), // Adjust top padding to account for the positioned Card
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Remove the duplicate Card here
-                          const SizedBox(height: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 4),
-                              Container(
-                                width: double.infinity,
-                                height: 42, // Set the height to 42
-                                padding: const EdgeInsets.all(8),
-                                decoration: ShapeDecoration(
-                                  color: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFFA4CAE4),
-                                    ),
-                                    borderRadius: BorderRadius.circular(26),
-                                  ),
-                                ),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Cari Layanan',
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: Color(0xFFBCBCBC),
-                                    ),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Layanan Publik',
-                            style: AppTextStyles.paragraph_14_medium,
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildServiceCard(
-                                Icons.report,
-                                'LaporRek',
-                                AppColors.white,
-                              ),
-                              // Modify the background color for 'Panggilan Darurat'
-                              _buildServiceCard(
-                                Icons.sos,
-                                'Panggilan Darurat',
-                                Colors.red,
-                                backgroundColor: AppColors.white,
-                              ),
-                              _buildServiceCard(
-                                Icons.camera_alt,
-                                'Pantau  Malang',
-                                AppColors.white,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Berita Terkini',
-                            style: AppTextStyles.heading_3_bold,
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            height: 150,
-                            color: AppColors.cce1f0,
-                            child: Center(
-                              child: Text(
-                                'Berita Terkini Placeholder',
-                                style: AppTextStyles.paragraph_18_regular,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // Adjust the position of the Card
-                Positioned(
-                  top: 90,
-                  left: 16,
-                  right: 16,
-                  child: Card(
-                    color: AppColors.c7db4d9,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(18.0),
-                        topRight: Radius.circular(18.0),
-                        bottomLeft: Radius.circular(18.0),
-                        bottomRight: Radius.circular(18.0),
-                      ), // Set the border radius
-                    ),
-                    child: Column(
-                      children: [
-                        Stack(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ListTile(
-                              leading:
-                                  userData?['photoProfile'] != null
-                                      ? CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          userData!['photoProfile'],
-                                        ),
-                                        onBackgroundImageError: (
-                                          exception,
-                                          stackTrace,
-                                        ) {
-                                          // Handle image loading error
-                                          print(
-                                            'Error loading image: $exception',
-                                          );
-                                        },
-                                      )
-                                      : CircleAvatar(
-                                        backgroundColor: AppColors.white,
-                                        child: Icon(
-                                          Icons.person,
-                                          color: AppColors.c7db4d9,
-                                        ),
-                                      ),
-                              title: Text(
-                                'Hai, ${userData?['name'] ?? 'Warga'}',
-                                style: AppTextStyles.paragraph_14_regular
-                                    .copyWith(color: AppColors.white),
-                              ),
-                              subtitle: Text(
-                                'Warga',
-                                style: AppTextStyles.heading_4_bold.copyWith(
-                                  color: AppColors.white,
+                            const SizedBox(height: 50), // Space for the avatar
+                            Center(
+                              child: Text(
+                                user?['name'] ?? 'User Name',
+                                style: AppTextStyles.heading_3_bold.copyWith(
+                                  color: AppColors.c2a6892,
                                 ),
                               ),
                             ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              bottom: 0,
-                              child: Container(
-                                width: 55,
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppColors
-                                          .c559dce, // Background color for trailing
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(18.0),
-                                    bottomRight: Radius.circular(0.0),
-                                    topLeft: Radius.circular(18.0),
-                                    bottomLeft: Radius.circular(0.0),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Alamat Email',
+                              style: AppTextStyles.paragraph_14_bold.copyWith(
+                                color: AppColors.c2a6892,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user?['email'] ?? 'xxxxxx@gmail.com',
+                              style: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: AppColors.c3585ba),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'NIK',
+                              style: AppTextStyles.paragraph_14_bold.copyWith(
+                                color: AppColors.c2a6892,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user?['nik'] ?? '1234567890',
+                              style: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: AppColors.c3585ba),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Alamat',
+                              style: AppTextStyles.paragraph_14_bold.copyWith(
+                                color: AppColors.c2a6892,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user?['address'] ?? '-',
+                              style: AppTextStyles.paragraph_14_regular
+                                  .copyWith(color: AppColors.c3585ba),
+                            ),
+                            const SizedBox(height: 16),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Navigate to edit profile screen
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.c2a6892,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 45.0,
+                                  ), // Add padding to increase button width
                                 ),
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: AppColors.white,
+                                child: const Text(
+                                  'Edit',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ), // Set text color to white
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.c2a6892,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(18.0),
-                              bottomRight: Radius.circular(18.0),
-                              topLeft: Radius.circular(0.0),
-                              topRight: Radius.circular(0.0),
-                            ),
-                          ),
-                          child: ListTile(
-                            leading: Icon(Icons.report, color: AppColors.white),
-                            title: Text(
-                              'Banyak Laporanmu 2',
-                              style: AppTextStyles.paragraph_14_bold.copyWith(
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
+                    const SizedBox(height: 16),
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.rate_review,
+                      title: 'Ulasan',
+                      subtitle: 'Tinggalkan ulasan Anda!',
+                      onTap: () {
+                        // Navigate to review screen
+                      },
+                    ),
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.description,
+                      title: 'Syarat dan Ketentuan',
+                      subtitle: 'Lihat ketentuan layanan kami.',
+                      onTap: () {
+                        // Navigate to terms and conditions screen
+                      },
+                    ),
+                    _buildProfileOption(
+                      context,
+                      icon: Icons.logout,
+                      title: 'Keluar',
+                      subtitle: 'Keluar dari akun dengan aman.',
+                      onTap: () {
+                        _logout();
+                      },
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 50,
+                  left: MediaQuery.of(context).size.width / 2 - 50,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                        user?['photoProfile'] != null
+                            ? NetworkImage(user!['photoProfile'])
+                            : const AssetImage(
+                                  'assets/images/profile_default.jpg',
+                                )
+                                as ImageProvider,
                   ),
                 ),
               ],
@@ -271,35 +183,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildServiceCard(
-    IconData icon,
-    String label,
-    Color color, {
-    Color backgroundColor = AppColors.c2a6892,
+  Widget _buildProfileOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
   }) {
-    return Card(
-      color: backgroundColor,
-      child: InkWell(
-        onTap: () {},
-        child: SizedBox(
-          width: 100,
-          height: 100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 40, color: color),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: AppTextStyles.paragraph_14_regular.copyWith(
-                  color: color,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+    return ListTile(
+      leading: Icon(icon, color: AppColors.c2a6892),
+      title: Text(
+        title,
+        style: AppTextStyles.heading_4_bold.copyWith(color: AppColors.c2a6892),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: AppTextStyles.paragraph_14_regular.copyWith(
+          color: AppColors.c3585ba,
         ),
       ),
+      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+      onTap: onTap,
     );
+  }
+
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    context.go(AppRoutes.auth); // Use context.go with the defined route
   }
 }

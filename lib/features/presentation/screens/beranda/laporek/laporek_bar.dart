@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/laporek/lapor_saya_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/laporek/lapor_warga_screen.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 
 class LaporekBar extends StatefulWidget {
   const LaporekBar({super.key});
@@ -20,6 +22,9 @@ class _LaporekBarState extends State<LaporekBar>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<LaporProvider>(context, listen: false).fetchAllLaporan();
+    });
   }
 
   @override

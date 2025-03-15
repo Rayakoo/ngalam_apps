@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:tes_gradle/features/data/datasources/firebase_auth_services.dart';
 import 'package:tes_gradle/features/data/datasources/user_data_service.dart';
 import 'package:tes_gradle/features/data/datasources/lapor_data_service.dart';
+import 'package:tes_gradle/features/data/datasources/komentar_data_service.dart';
 import 'package:tes_gradle/features/data/repositories/auth_repositories_impl.dart';
 import 'package:tes_gradle/features/data/repositories/user_repositories_impl.dart';
 import 'package:tes_gradle/features/data/repositories/lapor_repositories_impl.dart';
@@ -21,6 +22,9 @@ import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/update_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/delete_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/get_user_reports.dart';
+import 'package:tes_gradle/features/domain/usecases/get_all_laporan.dart';
+import 'package:tes_gradle/features/domain/usecases/create_komentar.dart';
+import 'package:tes_gradle/features/domain/usecases/get_komentar_by_laporan_id.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
@@ -34,6 +38,7 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<FirebaseAuthService>(() => FirebaseAuthService());
   sl.registerLazySingleton<UserDataService>(() => UserDataService());
   sl.registerLazySingleton<LaporDataService>(() => LaporDataService());
+  sl.registerLazySingleton<KomentarDataService>(() => KomentarDataService());
 
   // Repository Layer
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -41,7 +46,8 @@ void setupDependencyInjection() {
     () => UserRepositoriesImpl(sl<UserDataService>(), sl<FirebaseFirestore>()),
   );
   sl.registerLazySingleton<LaporRepository>(
-    () => LaporRepositoryImpl(sl<LaporDataService>()),
+    () =>
+        LaporRepositoryImpl(sl<LaporDataService>(), sl<KomentarDataService>()),
   );
 
   // Use Cases
@@ -59,6 +65,11 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<UpdateLaporan>(() => UpdateLaporan(sl()));
   sl.registerLazySingleton<DeleteLaporan>(() => DeleteLaporan(sl()));
   sl.registerLazySingleton<GetUserReports>(() => GetUserReports(sl()));
+  sl.registerLazySingleton<GetAllLaporan>(() => GetAllLaporan(sl()));
+  sl.registerLazySingleton<CreateKomentar>(() => CreateKomentar(sl()));
+  sl.registerLazySingleton<GetKomentarByLaporanId>(
+    () => GetKomentarByLaporanId(sl()),
+  );
 
   // Providers
   sl.registerLazySingleton<AuthProvider>(
@@ -81,6 +92,9 @@ void setupDependencyInjection() {
       sl<UpdateLaporan>(),
       sl<DeleteLaporan>(),
       sl<GetUserReports>(),
+      sl<GetAllLaporan>(),
+      sl<CreateKomentar>(),
+      sl<GetKomentarByLaporanId>(),
     ),
   );
 }
