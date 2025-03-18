@@ -9,6 +9,7 @@ import 'package:tes_gradle/features/domain/usecases/get_user_data.dart';
 import 'package:tes_gradle/features/domain/usecases/get_user_reports.dart';
 import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/update_laporan.dart';
+import 'package:tes_gradle/features/domain/usecases/status_history_usecases.dart';
 import 'package:tes_gradle/features/presentation/router/approuter.dart';
 import 'package:tes_gradle/features/presentation/style/theme.dart';
 import 'firebase_options.dart';
@@ -16,10 +17,13 @@ import 'package:provider/provider.dart';
 import 'features/presentation/provider/auth_provider.dart';
 import 'features/presentation/provider/user_provider.dart';
 import 'features/presentation/provider/lapor_provider.dart';
+import 'features/presentation/provider/status_history_provider.dart';
 import 'features/presentation/screens/welcome_page.dart';
 import 'features/presentation/screens/beranda/home_screen.dart';
 import 'di/injetion_container.dart' as di;
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -32,7 +36,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HttpOverrides.global = MyHttpOverrides(); // Disable SSL verification
+  HttpOverrides.global = MyHttpOverrides();
 
   try {
     print('Initializing Firebase...');
@@ -47,7 +51,7 @@ void main() async {
   print('Setting up dependency injection...');
   di.setupDependencyInjection();
   print('Dependency injection setup completed.');
-
+  await initializeDateFormatting('id_ID', null);
   runApp(
     MultiProvider(
       providers: [
@@ -76,7 +80,21 @@ void main() async {
                 di.sl<GetAllLaporan>(),
                 di.sl<CreateKomentar>(),
                 di.sl<GetKomentarByLaporanId>(),
+                di.sl<CreateStatusHistory>(), // Add this line
               ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => StatusHistoryProvider(
+                di.sl<CreateStatusHistory>(),
+                di.sl<ReadStatusHistory>(),
+                di.sl<UpdateStatusHistory>(),
+                di.sl<DeleteStatusHistory>(),
+                di.sl<GetStatusHistoryByLaporanId>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider(di.sl(), di.sl()),
         ),
       ],
       child: const MyApp(),

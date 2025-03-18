@@ -12,7 +12,8 @@ class LaporanModel extends Laporan {
     required DateTime timeStamp,
     required String status,
     required bool anonymus,
-    required List<Map<String, dynamic>> statusHistory, // Add this line
+    required String uid, // Add this field
+    required List<Map<String, dynamic>> statusHistory,
   }) : super(
          id: id,
          kategoriLaporan: kategoriLaporan,
@@ -23,7 +24,8 @@ class LaporanModel extends Laporan {
          timeStamp: timeStamp,
          status: status,
          anonymus: anonymus,
-         statusHistory: statusHistory, // Add this line
+         uid: uid, // Add this field
+         statusHistory: statusHistory,
        );
 
   factory LaporanModel.fromJson(Map<String, dynamic> json, String id) {
@@ -37,9 +39,10 @@ class LaporanModel extends Laporan {
       timeStamp: (json['timeStamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: json['status'] ?? '',
       anonymus: json['anonymus'] ?? false,
+      uid: json['uid'] ?? '', // Add this field
       statusHistory: List<Map<String, dynamic>>.from(
         json['statusHistory'] ?? [],
-      ), // Add this line
+      ),
     );
   }
 
@@ -54,7 +57,8 @@ class LaporanModel extends Laporan {
       'timeStamp': Timestamp.fromDate(timeStamp),
       'status': status,
       'anonymus': anonymus,
-      'statusHistory': statusHistory, // Add this line
+      'uid': uid, // Add this field
+      'statusHistory': statusHistory,
     };
   }
 }

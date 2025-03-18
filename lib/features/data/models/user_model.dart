@@ -8,12 +8,14 @@ class UserModel extends UserEntity {
     required super.email,
     required super.password,
     this.photoProfile =
-        'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7', // Default photo profile URL
-    this.address = '-', // Default address
+        'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7', 
+    this.address = '-', 
+    this.role = 'user',
   });
 
   final String photoProfile;
   final String address;
+  final String role;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -25,6 +27,7 @@ class UserModel extends UserEntity {
           json['photoProfile'] ??
           'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7',
       address: json['address'] ?? '-',
+      role: json['role'] ?? 'user',
     );
   }
 
@@ -36,6 +39,7 @@ class UserModel extends UserEntity {
       'password': password,
       'photoProfile': photoProfile,
       'address': address,
+      'role': role,
     };
   }
 }

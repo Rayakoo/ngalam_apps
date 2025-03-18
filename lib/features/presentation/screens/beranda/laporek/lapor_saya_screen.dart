@@ -335,9 +335,8 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
       timeStamp: DateTime.now(),
       status: 'Menunggu',
       anonymus: _isAnonymityChecked,
-      statusHistory: [
-        {'status': 'Menunggu', 'date': DateTime.now()},
-      ], 
+      statusHistory: [],
+      uid: ''
     );
 
     final laporProvider = Provider.of<LaporProvider>(context, listen: false);

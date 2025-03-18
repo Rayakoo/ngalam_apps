@@ -8,7 +8,8 @@ class Laporan {
   final DateTime timeStamp;
   final String status;
   final bool anonymus;
-  final List<Map<String, dynamic>> statusHistory; // Add this line
+  final String uid; // Add this field
+  final List<Map<String, dynamic>> statusHistory;
 
   Laporan({
     required this.id,
@@ -20,7 +21,8 @@ class Laporan {
     required this.timeStamp,
     required this.status,
     required this.anonymus,
-    required this.statusHistory, // Add this line
+    required this.uid, // Add this field
+    required this.statusHistory,
   });
 
   static const List<String> kategoriLaporanOptions = [

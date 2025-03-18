@@ -28,6 +28,16 @@ import 'package:tes_gradle/features/domain/usecases/get_komentar_by_laporan_id.d
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
+import 'package:tes_gradle/features/data/datasources/status_history_data_service.dart';
+import 'package:tes_gradle/features/data/repositories/status_history_repository_impl.dart';
+import 'package:tes_gradle/features/domain/repositories/status_history_repository.dart';
+import 'package:tes_gradle/features/domain/usecases/status_history_usecases.dart';
+import 'package:tes_gradle/features/presentation/provider/status_history_provider.dart';
+import 'package:tes_gradle/features/data/datasources/notification_data_service.dart';
+import 'package:tes_gradle/features/data/repositories/notification_repository_impl.dart';
+import 'package:tes_gradle/features/domain/repositories/notification_repository.dart';
+import 'package:tes_gradle/features/domain/usecases/notification_usecases.dart';
+import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
 
 final sl = GetIt.instance;
 
@@ -39,6 +49,9 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<UserDataService>(() => UserDataService());
   sl.registerLazySingleton<LaporDataService>(() => LaporDataService());
   sl.registerLazySingleton<KomentarDataService>(() => KomentarDataService());
+  sl.registerLazySingleton<StatusHistoryDataService>(
+    () => StatusHistoryDataService(),
+  );
 
   // Repository Layer
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -48,6 +61,9 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<LaporRepository>(
     () =>
         LaporRepositoryImpl(sl<LaporDataService>(), sl<KomentarDataService>()),
+  );
+  sl.registerLazySingleton<StatusHistoryRepository>(
+    () => StatusHistoryRepositoryImpl(sl<StatusHistoryDataService>()),
   );
 
   // Use Cases
@@ -69,6 +85,19 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<CreateKomentar>(() => CreateKomentar(sl()));
   sl.registerLazySingleton<GetKomentarByLaporanId>(
     () => GetKomentarByLaporanId(sl()),
+  );
+  sl.registerLazySingleton<CreateStatusHistory>(
+    () => CreateStatusHistory(sl()),
+  );
+  sl.registerLazySingleton<ReadStatusHistory>(() => ReadStatusHistory(sl()));
+  sl.registerLazySingleton<UpdateStatusHistory>(
+    () => UpdateStatusHistory(sl()),
+  );
+  sl.registerLazySingleton<DeleteStatusHistory>(
+    () => DeleteStatusHistory(sl()),
+  );
+  sl.registerLazySingleton<GetStatusHistoryByLaporanId>(
+    () => GetStatusHistoryByLaporanId(sl()),
   );
 
   // Providers
@@ -95,6 +124,25 @@ void setupDependencyInjection() {
       sl<GetAllLaporan>(),
       sl<CreateKomentar>(),
       sl<GetKomentarByLaporanId>(),
+      sl<CreateStatusHistory>(),
     ),
   );
+  sl.registerLazySingleton<StatusHistoryProvider>(
+    () => StatusHistoryProvider(
+      sl<CreateStatusHistory>(),
+      sl<ReadStatusHistory>(),
+      sl<UpdateStatusHistory>(),
+      sl<DeleteStatusHistory>(),
+      sl<GetStatusHistoryByLaporanId>(),
+    ),
+  );
+
+  // Notification
+  sl.registerLazySingleton(() => NotificationDataService());
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton(() => CreateNotification(sl()));
+  sl.registerLazySingleton(() => GetNotificationsByUserId(sl()));
+  sl.registerFactory(() => NotificationProvider(sl(), sl()));
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tes_gradle/features/domain/usecases/login_user.dart';
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
+import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
@@ -219,29 +221,31 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      final user = await Provider.of<AuthProvider>(
+      await authProvider.login(
+        _emailController.text,
+        _passwordController.text,
         context,
-        listen: false,
-      ).login(email, password, context);
-      if (mounted) {
+      );
+
+      await userProvider.fetchUserData();
+
+      if (userProvider.userRole == 'admin') {
+        context.go(AppRoutes.admin);
+      } else {
         context.go(AppRoutes.navbar);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

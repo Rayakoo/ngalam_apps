@@ -15,7 +15,7 @@ class LaporRepositoryImpl implements LaporRepository {
   @override
   Future<Laporan> createLaporan(Laporan laporan) async {
     final laporanModel = LaporanModel(
-      id: '', // Add this line
+      id: '',
       kategoriLaporan: laporan.kategoriLaporan,
       judulLaporan: laporan.judulLaporan,
       keteranganLaporan: laporan.keteranganLaporan,
@@ -24,13 +24,14 @@ class LaporRepositoryImpl implements LaporRepository {
       timeStamp: laporan.timeStamp,
       status: laporan.status,
       anonymus: laporan.anonymus,
-      statusHistory: laporan.statusHistory, // Add this line
+      statusHistory: laporan.statusHistory,
+      uid: laporan.uid,
     );
     final createdLaporanModel = await _laporDataService.createLaporan(
       laporanModel,
     );
     return Laporan(
-      id: createdLaporanModel.id, // Use the ID from Firestore
+      id: createdLaporanModel.id,
       kategoriLaporan: createdLaporanModel.kategoriLaporan,
       judulLaporan: createdLaporanModel.judulLaporan,
       keteranganLaporan: createdLaporanModel.keteranganLaporan,
@@ -39,7 +40,8 @@ class LaporRepositoryImpl implements LaporRepository {
       timeStamp: createdLaporanModel.timeStamp,
       status: createdLaporanModel.status,
       anonymus: createdLaporanModel.anonymus,
-      statusHistory: createdLaporanModel.statusHistory, // Add this line
+      statusHistory: createdLaporanModel.statusHistory,
+      uid: laporan.uid,
     );
   }
 
@@ -48,7 +50,7 @@ class LaporRepositoryImpl implements LaporRepository {
     final laporanModel = await _laporDataService.readLaporan(id);
     if (laporanModel != null) {
       return Laporan(
-        id: id, // Add this line
+        id: laporanModel.id,
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
@@ -57,7 +59,8 @@ class LaporRepositoryImpl implements LaporRepository {
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,
         anonymus: laporanModel.anonymus,
-        statusHistory: laporanModel.statusHistory, // Add this line
+        statusHistory: laporanModel.statusHistory,
+        uid: laporanModel.uid,
       );
     }
     return null;
@@ -66,7 +69,7 @@ class LaporRepositoryImpl implements LaporRepository {
   @override
   Future<void> updateLaporan(String id, Laporan laporan) async {
     final laporanModel = LaporanModel(
-      id: id, // Add this line
+      id: id,
       kategoriLaporan: laporan.kategoriLaporan,
       judulLaporan: laporan.judulLaporan,
       keteranganLaporan: laporan.keteranganLaporan,
@@ -75,14 +78,15 @@ class LaporRepositoryImpl implements LaporRepository {
       timeStamp: laporan.timeStamp,
       status: laporan.status,
       anonymus: laporan.anonymus,
-      statusHistory: laporan.statusHistory, // Add this line
+      statusHistory: laporan.statusHistory,
+      uid: laporan.uid,
     );
-    return await _laporDataService.updateLaporan(id, laporanModel);
+    await _laporDataService.updateLaporan(id, laporanModel);
   }
 
   @override
   Future<void> deleteLaporan(String id) async {
-    return await _laporDataService.deleteLaporan(id);
+    await _laporDataService.deleteLaporan(id);
   }
 
   @override
@@ -90,7 +94,7 @@ class LaporRepositoryImpl implements LaporRepository {
     final laporanModels = await _laporDataService.getUserReports(userId);
     return laporanModels.map((laporanModel) {
       return Laporan(
-        id: laporanModel.id, // Add this line
+        id: laporanModel.id,
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
@@ -99,7 +103,8 @@ class LaporRepositoryImpl implements LaporRepository {
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,
         anonymus: laporanModel.anonymus,
-        statusHistory: laporanModel.statusHistory, // Add this line
+        statusHistory: laporanModel.statusHistory,
+        uid: laporanModel.uid,
       );
     }).toList();
   }
@@ -109,7 +114,7 @@ class LaporRepositoryImpl implements LaporRepository {
     final laporanModels = await _laporDataService.getAllLaporan();
     return laporanModels.map((laporanModel) {
       return Laporan(
-        id: laporanModel.id, // Add this line
+        id: laporanModel.id,
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
@@ -118,7 +123,8 @@ class LaporRepositoryImpl implements LaporRepository {
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,
         anonymus: laporanModel.anonymus,
-        statusHistory: laporanModel.statusHistory, // Add this line
+        statusHistory: laporanModel.statusHistory,
+        uid: laporanModel.uid,
       );
     }).toList();
   }

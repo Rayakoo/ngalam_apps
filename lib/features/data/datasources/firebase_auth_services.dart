@@ -11,24 +11,15 @@ class FirebaseAuthService {
   }
 
   Future<UserModel> register(
-    String nomerIndukKependudukan,
-    String name,
     String email,
-    String password, {
+    String password,
+    String name,
+    String nomerIndukKependudukan, {
     String photoProfile =
         'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7',
     String address = '-',
+    String role = 'user',
   }) async {
-    // Pengecekan untuk memastikan nomerIndukKependudukan tidak kosong
-    if (nomerIndukKependudukan.isEmpty) {
-      throw Exception('NIK tidak boleh kosong');
-    }
-
-    // Mengatur name default sesuai dengan nama email jika name tidak diisi
-    if (name.isEmpty) {
-      name = email.split('@')[0];
-    }
-
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
@@ -41,8 +32,9 @@ class FirebaseAuthService {
           name: name,
           email: firebaseUser.email ?? '',
           password: password,
-          photoProfile: photoProfile, // Default photo profile URL
-          address: address, // Default address
+          photoProfile: photoProfile,
+          address: address,
+          role: role,
         );
 
         // Save user data to Firestore
@@ -85,6 +77,7 @@ class FirebaseAuthService {
                 userData['photoProfile'] ??
                 'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7',
             address: userData['address'] ?? '-',
+            role: userData['role'] ?? 'user',
           );
         } else {
           throw Exception('User data not found');

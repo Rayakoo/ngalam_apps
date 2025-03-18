@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tes_gradle/features/domain/entities/user.dart';
 
 class UserDataService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
