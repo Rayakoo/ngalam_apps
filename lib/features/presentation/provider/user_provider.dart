@@ -29,4 +29,6 @@ class UserProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  String get userRole => _userData?['role'] ?? 'user'; // Add this line
 }

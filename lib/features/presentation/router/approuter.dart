@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
@@ -16,11 +17,18 @@ import 'package:tes_gradle/features/presentation/screens/authentication/verify_o
 import 'package:tes_gradle/features/presentation/screens/authentication/reset_password_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/navbar/navbar_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/laporek/laporek_bar.dart';
+import 'package:tes_gradle/features/presentation/screens/admin/admin_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/admin/berita_admin_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/admin/laporan_admin_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/admin/detail_laporan_admin_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/activity/detail_status_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash, // Set the initial route to splash
-    redirect: (BuildContext context, GoRouterState state) {
+    initialLocation: AppRoutes.splash,
+    redirect: (BuildContext context, GoRouterState state) async {
       final user = firebase_auth.FirebaseAuth.instance.currentUser;
       final loggingIn =
           state.subloc == AppRoutes.auth ||
@@ -31,19 +39,25 @@ class AppRouter {
           state.subloc == AppRoutes.resetPassword;
       final isSplash = state.subloc == AppRoutes.splash;
 
-      // Debug print statements to see the current route and the redirected route
       print('Current route: ${state.subloc}');
       if (isSplash) {
         print('Allowing splash screen to navigate');
-        return null; // Allow splash screen to navigate
+        return null;
       }
       if (user == null && !loggingIn) {
         print('Redirecting to: ${AppRoutes.auth}');
         return AppRoutes.auth;
       }
       if (user != null && loggingIn) {
-        print('Redirecting to: ${AppRoutes.navbar}');
-        return AppRoutes.navbar;
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        await userProvider.fetchUserData();
+        if (userProvider.userRole == 'admin') {
+          print('Redirecting to: ${AppRoutes.admin}');
+          return AppRoutes.admin;
+        } else {
+          print('Redirecting to: ${AppRoutes.navbar}');
+          return AppRoutes.navbar;
+        }
       }
       return null;
     },
@@ -155,6 +169,46 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           print('Navigating to LaporekBar');
           return const LaporekBar();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.admin,
+        name: 'admin',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to AdminScreen');
+          return const AdminScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.beritaAdmin,
+        name: 'beritaAdmin',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to BeritaAdminScreen');
+          return const BeritaAdminScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.laporanAdmin,
+        name: 'laporanAdmin',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to LaporanAdminScreen');
+          return const LaporanAdminScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.detailLaporanAdmin,
+        name: 'detailLaporanAdmin',
+        builder: (BuildContext context, GoRouterState state) {
+          final laporan = state.extra as Laporan;
+          return DetailLaporanAdminScreen(laporan: laporan);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.detailStatus,
+        name: 'detailStatus',
+        builder: (BuildContext context, GoRouterState state) {
+          final laporan = state.extra as Laporan;
+          return DetailStatusScreen(laporan: laporan);
         },
       ),
     ],

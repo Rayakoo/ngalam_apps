@@ -21,4 +21,9 @@ class AppRoutes {
   static const String resetPassword = '/reset-password';
   static const String navbar = '/navbar';
   static const String laporekBar = '/laporek-bar';
+  static const String admin = '/admin';
+  static const String beritaAdmin = '/berita-admin';
+  static const String laporanAdmin = '/laporan-admin';
+  static const String detailLaporanAdmin = '/detail-laporan-admin';
+  static const String detailStatus = '/detail-status';
 }

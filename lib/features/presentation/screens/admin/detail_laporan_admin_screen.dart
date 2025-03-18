@@ -4,21 +4,33 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/domain/entities/komentar.dart';
+import 'package:tes_gradle/features/domain/entities/status_history.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
+import 'package:tes_gradle/features/presentation/provider/status_history_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:tes_gradle/features/data/models/laporan_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/domain/entities/notification.dart'
+    as domain;
+import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
 
-class DetailLaporanScreen extends StatefulWidget {
+class DetailLaporanAdminScreen extends StatefulWidget {
   final Laporan laporan;
 
-  const DetailLaporanScreen({super.key, required this.laporan});
+  const DetailLaporanAdminScreen({super.key, required this.laporan});
 
   @override
-  _DetailLaporanScreenState createState() => _DetailLaporanScreenState();
+  _DetailLaporanAdminScreenState createState() =>
+      _DetailLaporanAdminScreenState();
 }
 
-class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
+class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
   final TextEditingController _komentarController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  String _selectedStatus = '';
+  String _imageUrl = '';
 
   @override
   void initState() {
@@ -27,30 +39,169 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
       Provider.of<LaporProvider>(
         context,
         listen: false,
-      ).fetchKomentarByLaporanId(widget.laporan.id); // Use the id field
+      ).fetchKomentarByLaporanId(widget.laporan.id);
     });
   }
 
   @override
   void dispose() {
     _komentarController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
   Future<void> _addKomentar() async {
     final laporProvider = Provider.of<LaporProvider>(context, listen: false);
     final komentar = Komentar(
-      namaPengirim: '', // This will be set automatically
-      fotoProfilPengirim: '', // Add appropriate value if needed
+      namaPengirim: '',
+      fotoProfilPengirim: '',
       pesan: _komentarController.text,
       timeStamp: DateTime.now(),
-      laporanId: widget.laporan.id, // Use the id field
+      laporanId: widget.laporan.id,
     );
     await laporProvider.addKomentar(komentar);
     _komentarController.clear();
-    await laporProvider.fetchKomentarByLaporanId(
-      widget.laporan.id,
-    ); // Use the id field
+    await laporProvider.fetchKomentarByLaporanId(widget.laporan.id);
+  }
+
+  Future<void> _updateStatus() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update Status'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Deskripsi Update'),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _imageUrl = value;
+                    });
+                  },
+                  decoration: InputDecoration(labelText: 'Image URL'),
+                ),
+                const SizedBox(height: 8),
+                DropdownButton<String>(
+                  value: _selectedStatus.isEmpty ? null : _selectedStatus,
+                  hint: Text('Select Status'),
+                  items:
+                      Laporan.statusOptions.map((String status) {
+                        return DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(status),
+                        );
+                      }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedStatus = newValue ?? '';
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (_selectedStatus.isNotEmpty) {
+                  final laporProvider = Provider.of<LaporProvider>(
+                    context,
+                    listen: false,
+                  );
+                  final statusHistoryProvider =
+                      Provider.of<StatusHistoryProvider>(
+                        context,
+                        listen: false,
+                      );
+                  final notificationProvider =
+                      Provider.of<NotificationProvider>(context, listen: false);
+
+                  final newStatusHistory = StatusHistory(
+                    id: '',
+                    laporanId: widget.laporan.id,
+                    status: _selectedStatus,
+                    description: _descriptionController.text,
+                    imageUrl: _imageUrl,
+                    timeStamp: DateTime.now(),
+                  );
+
+                  // Create the status history entry
+                  final createdStatusHistory = await statusHistoryProvider
+                      .addStatusHistory(newStatusHistory);
+
+                  // Add the created status history to the laporan
+                  final updatedLaporan = LaporanModel(
+                    id: widget.laporan.id,
+                    kategoriLaporan: widget.laporan.kategoriLaporan,
+                    judulLaporan: widget.laporan.judulLaporan,
+                    keteranganLaporan: widget.laporan.keteranganLaporan,
+                    lokasiKejadian: widget.laporan.lokasiKejadian,
+                    foto: widget.laporan.foto,
+                    timeStamp: widget.laporan.timeStamp,
+                    status: _selectedStatus, // Ensure status is updated
+                    anonymus: widget.laporan.anonymus,
+                    uid: widget.laporan.uid, // Add this field
+                    statusHistory: [
+                      ...widget.laporan.statusHistory,
+                      {
+                        'status': createdStatusHistory.status,
+                        'date': createdStatusHistory.timeStamp,
+                        'description': createdStatusHistory.description,
+                        'imageUrl': createdStatusHistory.imageUrl,
+                      },
+                    ],
+                  );
+
+                  print('Updating laporan with ID: ${widget.laporan.id}');
+                  print('Updated status: $_selectedStatus');
+                  print(
+                    'Updated status history: ${updatedLaporan.statusHistory}',
+                  );
+
+                  await laporProvider.updateLaporan(
+                    widget.laporan.id,
+                    updatedLaporan,
+                  );
+
+                  // Create a notification for the user
+                  final notification = domain.Notification(
+                    id: '',
+                    judul: 'Status Laporan Diperbarui',
+                    kategori: 'Pemberitahuan',
+                    waktu: DateTime.now(),
+                    deskripsi:
+                        'Status laporan "${widget.laporan.judulLaporan}" telah diperbarui menjadi $_selectedStatus.',
+                    userId: widget.laporan.uid, // Use the userId field
+                  );
+
+                  await notificationProvider.addNotification(notification);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Status updated to $_selectedStatus'),
+                    ),
+                  );
+                  context.go(AppRoutes.laporanAdmin);
+                }
+              },
+              child: Text('Confirm Update'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -59,6 +210,12 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
       appBar: AppBar(
         title: Text('Detail Laporan'),
         backgroundColor: AppColors.cce1f0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go(AppRoutes.laporanAdmin);
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -125,6 +282,8 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
             _buildRiwayatLaporan(),
             const SizedBox(height: 16),
             _buildKomentarSection(),
+            const SizedBox(height: 16),
+            _buildStatusUpdateSection(),
           ],
         ),
       ),
@@ -194,7 +353,7 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
             return _buildRiwayatItem(
               statusEntry['status'],
               _formatDate((statusEntry['date'] as Timestamp).toDate()),
-              'Status updated',
+              statusEntry['description'] ?? 'Status updated',
             );
           }).toList(),
     );
@@ -320,6 +479,37 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusUpdateSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Update Status',
+          style: AppTextStyles.heading_4_bold.copyWith(
+            color: AppColors.c2a6892,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: _updateStatus,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.c2a6892,
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+          ),
+          child: Text(
+            'Update Status',
+            style: AppTextStyles.paragraph_14_medium.copyWith(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

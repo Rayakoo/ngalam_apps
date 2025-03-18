@@ -402,6 +402,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       photoProfile:
           'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7', // Default photo profile path
       address: '-', // Default address
+      role: 'user', // Default role
     );
 
     try {
@@ -434,6 +435,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'email': user.email,
             'photoProfile': user.photoProfile, // Save photoProfile
             'address': user.address, // Save address
+            'role': user.role, // Save role
           },
         );
       });

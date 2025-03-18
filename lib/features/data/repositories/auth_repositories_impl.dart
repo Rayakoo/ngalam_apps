@@ -17,6 +17,7 @@ class AuthRepositoryImpl implements AuthRepository {
       nomer_induk_kependudukan: user.nomer_induk_kependudukan,
       photoProfile: user.photoProfile,
       address: user.address,
+      role: user.role,
     );
   }
 
@@ -29,6 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String photoProfile =
         'https://th.bing.com/th/id/OIP.hGSCbXlcOjL_9mmzerqAbQHaHa?w=182&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7',
     String address = '-',
+    String role = 'user',
   }) async {
     final user = await firebaseAuthService.register(
       email,
@@ -37,6 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
       nomer_induk_kependudukan,
       photoProfile: photoProfile,
       address: address,
+      role: role,
     );
     return UserEntity(
       password: user.password,
@@ -45,6 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
       nomer_induk_kependudukan: user.nomer_induk_kependudukan,
       photoProfile: user.photoProfile,
       address: user.address,
+      role: user.role,
     );
   }
 

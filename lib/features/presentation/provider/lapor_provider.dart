@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Add this line
-import 'package:cloud_firestore/cloud_firestore.dart'; // Add this line
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/domain/entities/komentar.dart';
+import 'package:tes_gradle/features/domain/entities/status_history.dart';
 import 'package:tes_gradle/features/domain/usecases/create_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/update_laporan.dart';
@@ -11,6 +12,7 @@ import 'package:tes_gradle/features/domain/usecases/get_user_reports.dart';
 import 'package:tes_gradle/features/domain/usecases/get_all_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/create_komentar.dart';
 import 'package:tes_gradle/features/domain/usecases/get_komentar_by_laporan_id.dart';
+import 'package:tes_gradle/features/domain/usecases/status_history_usecases.dart';
 
 class LaporProvider with ChangeNotifier {
   final CreateLaporan _createLaporan;
@@ -21,7 +23,8 @@ class LaporProvider with ChangeNotifier {
   final GetAllLaporan _getAllLaporan;
   final CreateKomentar _createKomentar;
   final GetKomentarByLaporanId _getKomentarByLaporanId;
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Add this line
+  final CreateStatusHistory _createStatusHistory;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   LaporProvider(
     this._createLaporan,
@@ -32,6 +35,7 @@ class LaporProvider with ChangeNotifier {
     this._getAllLaporan,
     this._createKomentar,
     this._getKomentarByLaporanId,
+    this._createStatusHistory,
   );
 
   List<Laporan>? _laporanList;
@@ -39,6 +43,7 @@ class LaporProvider with ChangeNotifier {
   Laporan? _laporan;
   bool _isLoading = false;
   List<Komentar>? _komentarList;
+  List<Laporan>? _userReports;
 
   List<Laporan>? get laporanList => _laporanList;
   List<Laporan>? get filteredLaporanList => _filteredLaporanList;
@@ -50,6 +55,7 @@ class LaporProvider with ChangeNotifier {
   Laporan? get laporan => _laporan;
   bool get isLoading => _isLoading;
   List<Komentar>? get komentarList => _komentarList;
+  List<Laporan>? get userReports => _userReports;
 
   Future<void> fetchLaporan(String id) async {
     _setLoading(true);
@@ -65,9 +71,28 @@ class LaporProvider with ChangeNotifier {
   Future<void> addLaporan(Laporan laporan) async {
     _setLoading(true);
     try {
+      final statusHistory = StatusHistory(
+        id: '',
+        laporanId: laporan.id,
+        status: 'Menunggu',
+        description: 'Laporan dibuat',
+        imageUrl: '',
+        timeStamp: DateTime.now(),
+      );
+      final createdStatusHistory = await _createStatusHistory.call(
+        StatusHistoryParams(statusHistory),
+      );
+
+      laporan.statusHistory.add({
+        'status': createdStatusHistory.status,
+        'description': createdStatusHistory.description,
+        'imageUrl': createdStatusHistory.imageUrl,
+        'date': createdStatusHistory.timeStamp,
+      });
+
       final createdLaporan = await _createLaporan.call(laporan);
-      _laporanList ??= []; // Initialize _laporanList if it's null
-      _laporanList?.add(createdLaporan); // Add the created laporan to the list
+      _laporanList ??= [];
+      _laporanList?.add(createdLaporan);
       notifyListeners();
     } catch (e) {
       print('Error adding laporan: $e');
@@ -79,7 +104,15 @@ class LaporProvider with ChangeNotifier {
   Future<void> updateLaporan(String id, Laporan laporan) async {
     _setLoading(true);
     try {
+      print('Calling updateLaporan use case with ID: $id');
+      print('Laporan status: ${laporan.status}');
+      print('Laporan status history: ${laporan.statusHistory}');
       await _updateLaporan.call(id, laporan);
+      final index = _laporanList?.indexWhere((l) => l.id == id);
+      if (index != null && index != -1) {
+        _laporanList?[index] = laporan;
+        notifyListeners();
+      }
     } catch (e) {
       print('Error updating laporan: $e');
     } finally {
@@ -87,7 +120,12 @@ class LaporProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateLaporanStatus(String id, String newStatus) async {
+  Future<void> updateLaporanStatus(
+    String id,
+    String newStatus,
+    String text,
+    String imageUrl,
+  ) async {
     _setLoading(true);
     try {
       final laporan = await _readLaporan.call(id);
@@ -102,6 +140,7 @@ class LaporProvider with ChangeNotifier {
           timeStamp: laporan.timeStamp,
           status: newStatus,
           anonymus: laporan.anonymus,
+          uid: laporan.uid,
           statusHistory: [
             ...laporan.statusHistory,
             {'status': newStatus, 'date': DateTime.now()},
@@ -131,7 +170,8 @@ class LaporProvider with ChangeNotifier {
   Future<void> fetchUserReports(String userId) async {
     _setLoading(true);
     try {
-      _laporanList = await _getUserReports.call(userId);
+      _userReports = await _getUserReports.call(userId);
+      notifyListeners();
     } catch (e) {
       print('Error fetching user reports: $e');
     } finally {
@@ -153,24 +193,23 @@ class LaporProvider with ChangeNotifier {
   Future<void> addKomentar(Komentar komentar) async {
     _setLoading(true);
     try {
-      final userId = _auth.currentUser?.uid; // Add this line
+      final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        throw Exception('User not logged in'); // Add this line
+        throw Exception('User not logged in');
       }
 
-      // Get user data from Firestore
       final userDoc =
           await FirebaseFirestore.instance
               .collection('users')
               .doc(userId)
-              .get(); // Add this line
+              .get();
       if (!userDoc.exists) {
-        throw Exception('User data not found'); // Add this line
+        throw Exception('User data not found');
       }
-      final userName = userDoc.data()?['name'] ?? 'Anonymous'; // Add this line
+      final userName = userDoc.data()?['name'] ?? 'Anonymous';
 
       final updatedKomentar = Komentar(
-        namaPengirim: userName, // Use user name instead of UID
+        namaPengirim: userName,
         fotoProfilPengirim: komentar.fotoProfilPengirim,
         pesan: komentar.pesan,
         timeStamp: komentar.timeStamp,

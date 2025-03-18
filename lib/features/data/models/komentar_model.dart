@@ -7,13 +7,13 @@ class KomentarModel extends Komentar {
     required String fotoProfilPengirim,
     required String pesan,
     required DateTime timeStamp,
-    required String laporanId, // Add this line
+    required String laporanId, 
   }) : super(
          namaPengirim: namaPengirim,
          fotoProfilPengirim: fotoProfilPengirim,
          pesan: pesan,
          timeStamp: timeStamp,
-         laporanId: laporanId, // Add this line
+         laporanId: laporanId, 
        );
 
   factory KomentarModel.fromJson(Map<String, dynamic> json) {
@@ -22,7 +22,7 @@ class KomentarModel extends Komentar {
       fotoProfilPengirim: json['fotoProfilPengirim'] ?? '',
       pesan: json['pesan'] ?? '',
       timeStamp: (json['timeStamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      laporanId: json['laporanId'] ?? '', // Add this line
+      laporanId: json['laporanId'] ?? '', 
     );
   }
 
@@ -32,7 +32,7 @@ class KomentarModel extends Komentar {
       'fotoProfilPengirim': fotoProfilPengirim,
       'pesan': pesan,
       'timeStamp': Timestamp.fromDate(timeStamp),
-      'laporanId': laporanId, // Add this line
+      'laporanId': laporanId, 
     };
   }
 }

@@ -25,6 +25,7 @@ class AuthProvider with ChangeNotifier {
   String? _email;
   String? _photoProfile;
   String? _address;
+  String? _role;
 
   AuthProvider({
     required this.loginUser,
@@ -57,7 +58,8 @@ class AuthProvider with ChangeNotifier {
       _email = user.email;
       _photoProfile = user.photoProfile;
       _address = user.address;
-      context.go('/home');
+      _role = user.role;
+      context.go(AppRoutes.navbar);
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

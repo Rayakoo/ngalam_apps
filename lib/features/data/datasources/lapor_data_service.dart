@@ -54,14 +54,15 @@ class LaporDataService {
 
   Future<void> updateLaporan(String id, LaporanModel laporan) async {
     try {
-      // Add new status entry to statusHistory
-      final newStatusEntry = {
-        'status': laporan.status,
-        'date': FieldValue.serverTimestamp(),
-      };
-      laporan.statusHistory.add(newStatusEntry);
+      // Ensure no new status entry is added here
+      final updatedData = laporan.toJson();
+      updatedData['status'] = laporan.status;
 
-      await _firestore.collection('laporan').doc(id).update(laporan.toJson());
+      print('Updating laporan with ID: $id');
+      print('Updated status: ${laporan.status}');
+      print('Updated status history: ${laporan.statusHistory}');
+
+      await _firestore.collection('laporan').doc(id).update(updatedData);
       print('Laporan updated successfully.');
     } catch (e) {
       print('Error updating laporan: $e');
