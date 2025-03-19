@@ -5,8 +5,8 @@ import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
-import 'package:tes_gradle/features/presentation/screens/beranda/laporek/detail_laporan_screen.dart'; 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:tes_gradle/features/presentation/screens/beranda/laporek/detail_laporan_screen.dart';
 
 class LaporWargaScreen extends StatefulWidget {
   const LaporWargaScreen({super.key});
@@ -442,7 +442,7 @@ class _LaporWargaScreenState extends State<LaporWargaScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              laporan.lokasiKejadian,
+              'Lat: ${laporan.lokasiKejadian.latitude}, Lng: ${laporan.lokasiKejadian.longitude}', 
               style: AppTextStyles.paragraph_14_regular.copyWith(
                 color: AppColors.c3585ba,
               ),

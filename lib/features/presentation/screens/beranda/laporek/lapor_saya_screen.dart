@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LaporSayaScreen extends StatefulWidget {
   const LaporSayaScreen({super.key});
@@ -20,6 +22,14 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   final TextEditingController _keteranganController = TextEditingController();
   final TextEditingController _lokasiController = TextEditingController();
   final TextEditingController _fotoController = TextEditingController();
+
+  Future<void> _setCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    _lokasiController.text =
+        'Lat: ${position.latitude}, Lng: ${position.longitude}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +195,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
                 setState(() {
                   _isLocationSame = value;
                   if (value) {
-                    _lokasiController.text = 'Lokasi Sekarang';
+                    _setCurrentLocation();
                   } else {
                     _lokasiController.clear();
                   }
@@ -325,18 +335,23 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   }
 
   Future<void> _submitLaporan() async {
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    final geoPoint = GeoPoint(position.latitude, position.longitude);
+
     final laporan = Laporan(
       id: '',
       kategoriLaporan: _selectedCategory,
       judulLaporan: _judulController.text,
       keteranganLaporan: _keteranganController.text,
-      lokasiKejadian: _lokasiController.text,
+      lokasiKejadian: geoPoint, // Use GeoPoint
       foto: _fotoController.text,
       timeStamp: DateTime.now(),
       status: 'Menunggu',
       anonymus: _isAnonymityChecked,
       statusHistory: [],
-      uid: ''
+      uid: '',
     );
 
     final laporProvider = Provider.of<LaporProvider>(context, listen: false);

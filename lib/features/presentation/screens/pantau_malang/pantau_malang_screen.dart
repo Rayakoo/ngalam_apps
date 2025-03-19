@@ -142,12 +142,10 @@ class _PantauMalangScreenState extends State<PantauMalangScreen> {
   }
 
   void _launchURL(String url) async {
+    print('Launching URL: $url'); // Debug statement
     final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
+    await launchUrl(uri);
+    print('URL launched successfully'); // Debug statement
   }
 
   @override

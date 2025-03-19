@@ -248,7 +248,10 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
               },
             ),
             const SizedBox(height: 16),
-            _buildLaporanInfo('Lokasi Laporan', widget.laporan.lokasiKejadian),
+            _buildLaporanInfo(
+              'Lokasi Laporan',
+              'Lat: ${widget.laporan.lokasiKejadian.latitude}, Lng: ${widget.laporan.lokasiKejadian.longitude}',
+            ), 
             _buildLaporanInfo(
               'Tanggal Pelaporan',
               _formatDate(widget.laporan.timeStamp),

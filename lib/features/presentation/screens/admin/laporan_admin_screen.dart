@@ -103,7 +103,7 @@ class _LaporanAdminScreenState extends State<LaporanAdminScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              laporan.lokasiKejadian,
+              'Lat: ${laporan.lokasiKejadian.latitude}, Lng: ${laporan.lokasiKejadian.longitude}',
               style: AppTextStyles.paragraph_14_regular.copyWith(
                 color: AppColors.c3585ba,
               ),

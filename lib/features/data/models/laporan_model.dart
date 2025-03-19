@@ -7,24 +7,24 @@ class LaporanModel extends Laporan {
     required String kategoriLaporan,
     required String judulLaporan,
     required String keteranganLaporan,
-    required String lokasiKejadian,
+    required GeoPoint lokasiKejadian, // Change to GeoPoint
     required String foto,
     required DateTime timeStamp,
     required String status,
     required bool anonymus,
-    required String uid, // Add this field
+    required String uid,
     required List<Map<String, dynamic>> statusHistory,
   }) : super(
          id: id,
          kategoriLaporan: kategoriLaporan,
          judulLaporan: judulLaporan,
          keteranganLaporan: keteranganLaporan,
-         lokasiKejadian: lokasiKejadian,
+         lokasiKejadian: lokasiKejadian, // Change to GeoPoint
          foto: foto,
          timeStamp: timeStamp,
          status: status,
          anonymus: anonymus,
-         uid: uid, // Add this field
+         uid: uid,
          statusHistory: statusHistory,
        );
 
@@ -34,12 +34,13 @@ class LaporanModel extends Laporan {
       kategoriLaporan: json['kategoriLaporan'] ?? '',
       judulLaporan: json['judulLaporan'] ?? '',
       keteranganLaporan: json['keteranganLaporan'] ?? '',
-      lokasiKejadian: json['lokasiKejadian'] ?? '',
+      lokasiKejadian:
+          json['lokasiKejadian'] ?? GeoPoint(0, 0), // Change to GeoPoint
       foto: json['foto'] ?? '',
       timeStamp: (json['timeStamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: json['status'] ?? '',
       anonymus: json['anonymus'] ?? false,
-      uid: json['uid'] ?? '', // Add this field
+      uid: json['uid'] ?? '',
       statusHistory: List<Map<String, dynamic>>.from(
         json['statusHistory'] ?? [],
       ),
@@ -52,12 +53,12 @@ class LaporanModel extends Laporan {
       'kategoriLaporan': kategoriLaporan,
       'judulLaporan': judulLaporan,
       'keteranganLaporan': keteranganLaporan,
-      'lokasiKejadian': lokasiKejadian,
+      'lokasiKejadian': lokasiKejadian, // Change to GeoPoint
       'foto': foto,
       'timeStamp': Timestamp.fromDate(timeStamp),
       'status': status,
       'anonymus': anonymus,
-      'uid': uid, // Add this field
+      'uid': uid,
       'statusHistory': statusHistory,
     };
   }
