@@ -6,6 +6,8 @@ import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.
 import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/login_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/navbar/navbar_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/panggilan/panggilan_option.dart';
+import 'package:tes_gradle/features/presentation/screens/pantau_malang/pantau_malang_screen.dart';
 
 class AppRoutes {
   static const String splash = '/welcome';
@@ -26,4 +28,6 @@ class AppRoutes {
   static const String laporanAdmin = '/laporan-admin';
   static const String detailLaporanAdmin = '/detail-laporan-admin';
   static const String detailStatus = '/detail-status';
+  static const String panggilanOption = '/panggilan-option';
+  static const String pantauMalang = '/pantau-malang';
 }

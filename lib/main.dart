@@ -24,6 +24,8 @@ import 'di/injetion_container.dart' as di;
 import 'dart:io';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
+import 'package:tes_gradle/features/presentation/provider/cctv_provider.dart';
+import 'package:flutter/services.dart'; // Add this import
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -52,6 +54,8 @@ void main() async {
   di.setupDependencyInjection();
   print('Dependency injection setup completed.');
   await initializeDateFormatting('id_ID', null);
+
+
   runApp(
     MultiProvider(
       providers: [
@@ -96,6 +100,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => NotificationProvider(di.sl(), di.sl()),
         ),
+        ChangeNotifierProvider(create: (_) => CCTVProvider(di.sl(), di.sl())),
       ],
       child: const MyApp(),
     ),

@@ -14,6 +14,17 @@ android {
     ndkVersion = flutter.ndkVersion
     ndkVersion = "29.0.13113456"
 
+    //  def flutterEnv = new Properties()
+    // def envFile = rootProject.file('.env')
+    // if (envFile.exists()) {
+    //     envFile.withInputStream { stream ->
+    //         flutterEnv.load(stream)
+    //     }
+    // }
+    //  manifestPlaceholders = [
+    //         GOOGLE_MAPS_API_KEY: flutterEnv['GOOGLE_MAPS_API_KEY'] ?: ""
+    //     ]
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

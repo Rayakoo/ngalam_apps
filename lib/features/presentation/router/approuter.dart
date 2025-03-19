@@ -24,6 +24,8 @@ import 'package:tes_gradle/features/presentation/screens/admin/detail_laporan_ad
 import 'package:tes_gradle/features/presentation/screens/activity/detail_status_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
+import 'package:tes_gradle/features/presentation/screens/panggilan/panggilan_option.dart';
+import 'package:tes_gradle/features/presentation/screens/pantau_malang/pantau_malang_screen.dart'; // Add this line
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -209,6 +211,21 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           final laporan = state.extra as Laporan;
           return DetailStatusScreen(laporan: laporan);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.panggilanOption, // Add this route
+        name: 'panggilanOption',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to PanggilanOptionScreen');
+          return const PanggilanOptionScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pantauMalang,
+        name: 'pantauMalang',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PantauMalangScreen();
         },
       ),
     ],

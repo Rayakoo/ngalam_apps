@@ -38,6 +38,12 @@ import 'package:tes_gradle/features/data/repositories/notification_repository_im
 import 'package:tes_gradle/features/domain/repositories/notification_repository.dart';
 import 'package:tes_gradle/features/domain/usecases/notification_usecases.dart';
 import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
+import 'package:tes_gradle/features/data/datasources/cctv_data_service.dart';
+import 'package:tes_gradle/features/data/repositories/cctv_repository_impl.dart';
+import 'package:tes_gradle/features/domain/repositories/cctv_repository.dart';
+import 'package:tes_gradle/features/domain/usecases/get_all_cctvs.dart';
+import 'package:tes_gradle/features/domain/usecases/add_cctv.dart';
+import 'package:tes_gradle/features/presentation/provider/cctv_provider.dart';
 
 final sl = GetIt.instance;
 
@@ -145,4 +151,11 @@ void setupDependencyInjection() {
   sl.registerLazySingleton(() => CreateNotification(sl()));
   sl.registerLazySingleton(() => GetNotificationsByUserId(sl()));
   sl.registerFactory(() => NotificationProvider(sl(), sl()));
+
+  // CCTV
+  sl.registerLazySingleton<CCTVDataService>(() => CCTVDataService());
+  sl.registerLazySingleton<CCTVRepository>(() => CCTVRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => GetAllCCTVs(sl()));
+  sl.registerLazySingleton(() => AddCCTV(sl()));
+  sl.registerFactory(() => CCTVProvider(sl(), sl()));
 }

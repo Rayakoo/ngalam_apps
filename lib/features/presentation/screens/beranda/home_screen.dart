@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 
-
-
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
@@ -140,11 +138,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 'Panggilan Darurat',
                                 Colors.red,
                                 backgroundColor: AppColors.white,
+                                onTap: () {
+                                  context.go(AppRoutes.panggilanOption);
+                                },
                               ),
                               _buildServiceCard(
                                 Icons.camera_alt,
-                                'Pantau  Malang',
+                                'Pantau Malang',
                                 AppColors.white,
+                                onTap: () {
+                                  context.go(AppRoutes.pantauMalang);
+                                },
                               ),
                             ],
                           ),
