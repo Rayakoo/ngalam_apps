@@ -21,9 +21,7 @@ android {
     //         flutterEnv.load(stream)
     //     }
     // }
-    //  manifestPlaceholders = [
-    //         GOOGLE_MAPS_API_KEY: flutterEnv['GOOGLE_MAPS_API_KEY'] ?: ""
-    //     ]
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -44,6 +42,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        //      manifestPlaceholders = [
+        //     GOOGLE_MAPS_API_KEY: flutterEnv['GOOGLE_MAPS_API_KEY'] ?: ""
+        // ]
     }
 
     buildTypes {
