@@ -48,16 +48,6 @@ class _AdminScreenState extends State<AdminScreen> {
     };
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
-        backgroundColor: AppColors.c2a6892,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-          ),
-        ],
-      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Stack(
@@ -340,6 +330,27 @@ class _AdminScreenState extends State<AdminScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: ElevatedButton(
+                onPressed: () => _logout(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

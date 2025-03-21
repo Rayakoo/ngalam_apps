@@ -1,8 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
+import 'package:tes_gradle/features/presentation/screens/authentication/pop_up_berhasil.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:geolocator/geolocator.dart';
@@ -43,6 +49,57 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
       }
     } catch (e) {
       _lokasiController.text = 'Gagal mendapatkan lokasi';
+    }
+  }
+
+  Future<String> uploadImage(String filePath) async {
+    final url = Uri.parse('https://api.cloudinary.com/v1_1/dpbw0ztwl/upload');
+
+    // Buat request upload
+    final request =
+        http.MultipartRequest('POST', url)
+          ..fields['upload_preset'] =
+              'a5tgii2s' // Ganti dengan Upload Preset kamu
+          ..files.add(
+            await http.MultipartFile.fromPath(
+              'file',
+              filePath,
+              contentType: MediaType(
+                'image',
+                'jpeg',
+              ), // Pastikan format file benar
+            ),
+          );
+
+    // Kirim request dan tangani respons
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.toBytes();
+      final responseString = String.fromCharCodes(responseData);
+      final jsonMap = jsonDecode(responseString);
+      print('Upload successful: ${jsonMap['secure_url']}'); // Debug log
+      return jsonMap['secure_url']; // Kembalikan URL file yang diunggah
+    } else {
+      print('Upload failed: ${response.statusCode}'); // Debug log
+      throw Exception('Failed to upload image');
+    }
+  }
+
+  Future<void> _uploadPhoto() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result != null && result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        print('Selected file: $filePath'); // Debug log
+        final uploadedUrl = await uploadImage(filePath);
+        setState(() {
+          _fotoController.text =
+              uploadedUrl; // Set the uploaded URL to the controller
+        });
+        print('Uploaded photo URL: $uploadedUrl'); // Debug log
+      }
+    } catch (e) {
+      print('Error uploading photo: $e'); // Debug log
     }
   }
 
@@ -279,12 +336,9 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
           ),
           child: Center(
             child: ElevatedButton.icon(
-              onPressed: () {
-                // Simulate photo upload by setting a dummy photo URL
-                _fotoController.text = 'https://example.com/photo.jpg';
-              },
-              icon: Icon(Icons.upload_file),
-              label: Text('Unggah Foto'),
+              onPressed: _uploadPhoto,
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Unggah Foto'),
               style: ElevatedButton.styleFrom(
                 side: BorderSide(color: AppColors.c2a6892, width: 2),
                 shape: RoundedRectangleBorder(
@@ -394,5 +448,18 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
       _isAnonymityChecked = false;
       _isLocationSame = false;
     });
+
+    // Show success dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return PopUpBerhasilScreen(
+          title: 'Laporan Anda di Terima!',
+          description:
+              'Anda bisa cek aktivitas untuk lihat riwayat laporan Anda!',
+          buttonText: 'Tutup',
+        );
+      },
+    );
   }
 }

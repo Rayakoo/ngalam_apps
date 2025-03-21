@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart'; // Import Fluttertoast
+import 'package:fluttertoast/fluttertoast.dart'; 
 import 'package:tes_gradle/features/domain/entities/user.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
-import 'pop_up_berhasil.dart'; // Import the PopUpBerhasilScreen
+import 'pop_up_berhasil.dart'; 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

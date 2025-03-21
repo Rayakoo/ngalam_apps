@@ -49,7 +49,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           backgroundColor: Colors.transparent,
-          
         ),
       ),
       body: Consumer<UserProvider>(
@@ -131,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               alignment: Alignment.bottomRight,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Navigate to edit profile screen
+                                  context.push(AppRoutes.editProfile);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.c2a6892,

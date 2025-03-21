@@ -43,4 +43,5 @@ class AppRoutes {
   static const String popUpPanggilan = '/pop-up-panggilan';
   static const String adminPantauMalang = '/admin-pantau-malang';
   static const String detailBerita = '/detail-berita';
+  static const String editProfile = '/edit-profile';
 }

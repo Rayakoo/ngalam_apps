@@ -11,6 +11,7 @@ class UserProvider with ChangeNotifier {
   final GetUserData _getUserData;
   final UpdateUser _updateUser; // Add UpdateUser use case
   final UserRepository _userRepository;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   UserProvider(
     this._getUserData,
@@ -57,6 +58,20 @@ class UserProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> updateAddress(String userId, String newAddress) async {
+    if (newAddress.isEmpty) {
+      throw Exception("Alamat tidak boleh kosong!");
+    }
+    await updateUser(userId, {'address': newAddress});
+  }
+
+  Future<void> updatePhotoProfile(String userId, String newPhotoUrl) async {
+    if (newPhotoUrl.isEmpty) {
+      throw Exception("Photo URL tidak boleh kosong!");
+    }
+    await updateUser(userId, {'photoProfile': newPhotoUrl});
   }
 
   String get userRole => _userData?['role'] ?? 'user';

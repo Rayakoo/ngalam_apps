@@ -56,22 +56,42 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
       laporanId: widget.laporan.id, // Use the id field
     );
 
+    print('Adding komentar: $komentar'); // Debug log
     await laporProvider.addKomentar(komentar);
+    print('Komentar added successfully'); // Debug log
 
+    final currentUser = FirebaseAuth.instance.currentUser;
     // Check if the commenter is not the owner of the report
-    if (widget.laporan.uid != komentar.namaPengirim) {
-      final currentUser = FirebaseAuth.instance.currentUser;
+    if (widget.laporan.uid != currentUser?.uid) {
+      String userName = 'Pengguna';
+      if (currentUser != null) {
+        final userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.uid)
+                .get();
+        userName = userDoc.data()?['name'] ?? 'Pengguna';
+      }
+
       final notification = domain.Notification(
         id: '',
-        judul:
-            currentUser?.displayName ?? 'Pengguna', // Use current user's name
+        judul: '$userName telah berkomentar',
         kategori: 'Komentar',
         waktu: DateTime.now(),
-        deskripsi: komentar.pesan, // Content of the comment
-        userId: widget.laporan.uid, // User ID of the report owner
+        deskripsi: komentar.pesan,
+        userId: widget.laporan.uid,
       );
 
+      print('Notification Details:');
+      print('ID: ${notification.id}');
+      print('Judul: ${notification.judul}');
+      print('Kategori: ${notification.kategori}');
+      print('Waktu: ${notification.waktu}');
+      print('Deskripsi: ${notification.deskripsi}');
+      print('User ID: ${notification.userId}');
+
       await notificationProvider.addNotification(notification);
+      print('Notification added successfully'); // Debug log
     }
 
     _komentarController.clear();

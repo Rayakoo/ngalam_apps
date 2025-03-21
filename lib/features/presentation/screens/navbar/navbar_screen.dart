@@ -59,23 +59,36 @@ class _NavbarScreenState extends State<NavbarScreen> {
           ProfileScreen(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.c2a6892,
-        unselectedItemColor: Colors.blueGrey,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Aktivitas'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifikasi',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white, // Background color
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1), // Shadow color
+              blurRadius: 10, // Blur radius
+              offset: Offset(0, -2), // Offset for shadow
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.white, // Set background color to white
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.c2a6892,
+          unselectedItemColor: Colors.blueGrey,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+            BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Aktivitas'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: 'Notifikasi',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

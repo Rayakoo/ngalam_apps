@@ -8,6 +8,7 @@ import 'package:tes_gradle/features/presentation/screens/activity/deskripsi_stat
 import 'package:tes_gradle/features/presentation/screens/admin/admin_pantau_malang.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/panggilan/pop_up_panggilan.dart';
+import 'package:tes_gradle/features/presentation/screens/profile/edit_profile_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/pop_up_alamat.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
@@ -289,6 +290,13 @@ class AppRouter {
         builder: (context, state) {
           final berita = state.extra as Berita;
           return DetailBeritaScreen(berita: berita);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        name: 'editProfile',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EditProfileScreen();
         },
       ),
     ],

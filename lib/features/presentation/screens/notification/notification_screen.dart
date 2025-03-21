@@ -166,7 +166,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     switch (_selectedFilter) {
       case 'Hari ini':
         return notifications.where((notification) {
-          return now.difference(notification.waktu).inHours < 24;
+          return notification.waktu.year == now.year &&
+              notification.waktu.month == now.month &&
+              notification.waktu.day == now.day;
         }).toList();
       case '7 Hari terakhir':
         return notifications.where((notification) {
