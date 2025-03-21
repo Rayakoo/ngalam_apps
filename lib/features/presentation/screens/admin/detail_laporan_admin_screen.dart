@@ -183,7 +183,7 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
                     waktu: DateTime.now(),
                     deskripsi:
                         'Status laporan "${widget.laporan.judulLaporan}" telah diperbarui menjadi $_selectedStatus.',
-                    userId: widget.laporan.uid, // Use the userId field
+                    userId: widget.laporan.uid, 
                   );
 
                   await notificationProvider.addNotification(notification);

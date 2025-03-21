@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:go_router/go_router.dart';
@@ -44,6 +43,16 @@ class _WelcomePageState extends State<WelcomePage> {
     },
   ];
 
+  final List<String> backgroundImages = [
+    "assets/images/background-welcome.png",
+    "assets/images/background-welcome.png",
+  ];
+
+  final List<String> topImages = [
+    'assets/images/orang.png',
+    'assets/images/orang-2.png',
+  ];
+
   void _nextPage() {
     if (_currentPage < slides.length - 1) {
       _pageController.nextPage(
@@ -61,31 +70,39 @@ class _WelcomePageState extends State<WelcomePage> {
       backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/background-welcome.png"),
-                fit: BoxFit.cover,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: Container(
+              key: ValueKey<int>(_currentPage),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(backgroundImages[_currentPage]),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
           Align(
             alignment: Alignment.topCenter,
-            child: Positioned(
-              bottom: 200,
-              left: 20,
-              right: 0,
-              child: Image.asset(
-                'assets/images/orang.png',
-                width: 711,
-                height: 620,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Text(
-                    "Gambar tidak ditemukan",
-                    style: TextStyle(color: Colors.red),
-                  );
-                },
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: Positioned(
+                key: ValueKey<int>(_currentPage),
+                bottom: 200,
+                left: 20,
+                right: 0,
+                child: Image.asset(
+                  topImages[_currentPage],
+                  width: 711,
+                  height: 620,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text(
+                      "Gambar tidak ditemukan",
+                      style: TextStyle(color: Colors.red),
+                    );
+                  },
+                ),
               ),
             ),
           ),

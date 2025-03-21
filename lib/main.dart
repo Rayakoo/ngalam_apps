@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tes_gradle/features/domain/usecases/create_komentar.dart';
@@ -10,6 +11,7 @@ import 'package:tes_gradle/features/domain/usecases/get_user_reports.dart';
 import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/update_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/status_history_usecases.dart';
+import 'package:tes_gradle/features/domain/usecases/update_user.dart';
 import 'package:tes_gradle/features/presentation/router/approuter.dart';
 import 'package:tes_gradle/features/presentation/style/theme.dart';
 import 'firebase_options.dart';
@@ -18,14 +20,15 @@ import 'features/presentation/provider/auth_provider.dart';
 import 'features/presentation/provider/user_provider.dart';
 import 'features/presentation/provider/lapor_provider.dart';
 import 'features/presentation/provider/status_history_provider.dart';
-import 'features/presentation/screens/welcome_page.dart';
+import 'features/presentation/screens/onboarding/welcome_page_child1.dart';
 import 'features/presentation/screens/beranda/home_screen.dart';
 import 'di/injetion_container.dart' as di;
 import 'dart:io';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
 import 'package:tes_gradle/features/presentation/provider/cctv_provider.dart';
-import 'package:flutter/services.dart'; // Add this import
+import 'package:flutter/services.dart';
+import 'package:tes_gradle/features/presentation/provider/berita_provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -55,12 +58,16 @@ void main() async {
   print('Dependency injection setup completed.');
   await initializeDateFormatting('id_ID', null);
 
-
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => UserProvider(GetUserData(di.sl()), di.sl()),
+          create:
+              (_) => UserProvider(
+                di.sl<GetUserData>(),
+                di.sl<UpdateUser>(), // Pass the UpdateUser use case
+                di.sl<FirebaseFirestore>(),
+              ),
         ),
         ChangeNotifierProvider(
           create:
@@ -68,8 +75,6 @@ void main() async {
                 loginUser: di.sl(),
                 registerUser: di.sl(),
                 forgotPassword: di.sl(),
-                sendOtp: di.sl(),
-                verifyOtp: di.sl(),
                 accountExists: di.sl(),
               ),
         ),
@@ -101,6 +106,15 @@ void main() async {
           create: (_) => NotificationProvider(di.sl(), di.sl()),
         ),
         ChangeNotifierProvider(create: (_) => CCTVProvider(di.sl(), di.sl())),
+        ChangeNotifierProvider(
+          create:
+              (_) => BeritaProvider(
+                fetchAllBerita: di.sl(),
+                createBerita: di.sl(),
+                updateBerita: di.sl(),
+                deleteBerita: di.sl(),
+              ),
+        ),
       ],
       child: const MyApp(),
     ),

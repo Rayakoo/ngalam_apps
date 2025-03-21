@@ -7,6 +7,10 @@ import 'package:tes_gradle/features/domain/entities/komentar.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:tes_gradle/features/domain/entities/notification.dart'
+    as domain;
+import 'package:tes_gradle/features/presentation/provider/notification_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth to get the current user
 
 class DetailLaporanScreen extends StatefulWidget {
   final Laporan laporan;
@@ -39,6 +43,11 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
 
   Future<void> _addKomentar() async {
     final laporProvider = Provider.of<LaporProvider>(context, listen: false);
+    final notificationProvider = Provider.of<NotificationProvider>(
+      context,
+      listen: false,
+    );
+
     final komentar = Komentar(
       namaPengirim: '', // This will be set automatically
       fotoProfilPengirim: '', // Add appropriate value if needed
@@ -46,19 +55,57 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
       timeStamp: DateTime.now(),
       laporanId: widget.laporan.id, // Use the id field
     );
+
     await laporProvider.addKomentar(komentar);
+
+    // Check if the commenter is not the owner of the report
+    if (widget.laporan.uid != komentar.namaPengirim) {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final notification = domain.Notification(
+        id: '',
+        judul:
+            currentUser?.displayName ?? 'Pengguna', // Use current user's name
+        kategori: 'Komentar',
+        waktu: DateTime.now(),
+        deskripsi: komentar.pesan, // Content of the comment
+        userId: widget.laporan.uid, // User ID of the report owner
+      );
+
+      await notificationProvider.addNotification(notification);
+    }
+
     _komentarController.clear();
-    await laporProvider.fetchKomentarByLaporanId(
-      widget.laporan.id,
-    ); // Use the id field
+    await laporProvider.fetchKomentarByLaporanId(widget.laporan.id);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detail Laporan'),
-        backgroundColor: AppColors.cce1f0,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'LaporRek',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -66,20 +113,24 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.laporan.kategoriLaporan,
+              widget.laporan.judulLaporan,
               style: AppTextStyles.heading_3_bold.copyWith(
                 color: AppColors.c2a6892,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              widget.laporan.judulLaporan, // Add the report title
-              style: AppTextStyles.heading_4_bold.copyWith(
-                color: AppColors.c2a6892,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.laporan.kategoriLaporan,
+                  style: AppTextStyles.paragraph_14_regular.copyWith(
+                    color: AppColors.grey,
+                  ),
+                ),
+                _buildStatusChip(widget.laporan.status),
+              ],
             ),
-            const SizedBox(height: 8),
-            _buildStatusChip(widget.laporan.status),
             const SizedBox(height: 16),
             Image.network(
               widget.laporan.foto,
@@ -94,7 +145,7 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
             _buildLaporanInfo(
               'Lokasi Laporan',
               'Lat: ${widget.laporan.lokasiKejadian.latitude}, Lng: ${widget.laporan.lokasiKejadian.longitude}',
-            ), 
+            ),
             _buildLaporanInfo(
               'Tanggal Pelaporan',
               _formatDate(widget.laporan.timeStamp),
@@ -159,33 +210,34 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
   }
 
   Widget _buildStatusChip(String status) {
-    Color textColor;
-    Color borderColor;
+    Color textColor = Colors.white;
+    Color backgroundColor;
     switch (status) {
       case 'Menunggu':
-        textColor = Colors.blue;
-        borderColor = Colors.blue;
+        backgroundColor = Colors.blue;
         break;
       case 'Sedang Diproses':
-        textColor = Colors.orange;
-        borderColor = Colors.orange;
+        backgroundColor = Colors.orange;
         break;
       case 'Selesai':
-        textColor = Colors.green;
-        borderColor = Colors.green;
+        backgroundColor = Colors.green;
         break;
       default:
-        textColor = Colors.grey;
-        borderColor = Colors.grey;
+        backgroundColor = Colors.grey;
     }
 
-    return Chip(
-      label: Text(
-        status,
-        style: AppTextStyles.paragraph_14_regular.copyWith(color: textColor),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8.0),
       ),
-      backgroundColor: Colors.transparent,
-      shape: StadiumBorder(side: BorderSide(color: borderColor)),
+      child: Text(
+        status == 'Sedang Diproses' ? 'Sedang Diproses' : status,
+        style: AppTextStyles.paragraph_14_regular.copyWith(color: textColor),
+        textAlign:
+            status == 'Sedang Diproses' ? TextAlign.center : TextAlign.left,
+      ),
     );
   }
 
@@ -241,7 +293,7 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Discussion',
+              'Diskusi',
               style: AppTextStyles.heading_4_bold.copyWith(
                 color: AppColors.c2a6892,
               ),
@@ -294,6 +346,7 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
 
   Widget _buildKomentarItem(Komentar komentar) {
     return Card(
+      color: AppColors.cce1f0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: Padding(

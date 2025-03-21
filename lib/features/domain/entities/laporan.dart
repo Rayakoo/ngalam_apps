@@ -27,6 +27,26 @@ class Laporan {
     required this.statusHistory,
   });
 
+  // Add the fromFirestore method
+  factory Laporan.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Laporan(
+      id: doc.id,
+      kategoriLaporan: data['kategoriLaporan'] ?? '',
+      judulLaporan: data['judulLaporan'] ?? '',
+      keteranganLaporan: data['keteranganLaporan'] ?? '',
+      lokasiKejadian: data['lokasiKejadian'] as GeoPoint,
+      foto: data['foto'] ?? '',
+      timeStamp: (data['timeStamp'] as Timestamp).toDate(),
+      status: data['status'] ?? '',
+      anonymus: data['anonymus'] ?? false,
+      statusHistory: List<Map<String, dynamic>>.from(
+        data['statusHistory'] ?? [],
+      ),
+      uid: data['uid'] ?? '',
+    );
+  }
+
   static const List<String> kategoriLaporanOptions = [
     'Layanan Sosial',
     'Pelayanan Umum',

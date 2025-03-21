@@ -27,9 +27,31 @@ class _LaporanAdminScreenState extends State<LaporanAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Update Laporan'),
-        backgroundColor: AppColors.c2a6892,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'Update Laporan',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.c020608),
+            onPressed: () {
+              context.go(AppRoutes.admin);
+            },
+          ),
+        ),
       ),
       body: Consumer<LaporProvider>(
         builder: (context, laporProvider, child) {

@@ -106,49 +106,7 @@ class FirebaseAuthService {
     }
   }
 
-  Future<void> sendOtp(String email) async {
-    try {
-      await _firebaseAuth.sendSignInLinkToEmail(
-        email: email,
-        actionCodeSettings: firebase_auth.ActionCodeSettings(
-          url:
-              'https://your-app.page.link/finishSignUp', // Replace with your actual Dynamic Link domain and path
-          handleCodeInApp: true,
-          iOSBundleId: 'com.example.ios',
-          androidPackageName: 'com.example.android',
-          androidInstallApp: true,
-          androidMinimumVersion: '12',
-        ),
-      );
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        throw Exception('No user found for that email.');
-      } else if (e.code == 'invalid-email') {
-        throw Exception('Invalid email address.');
-      } else {
-        throw Exception('Error sending OTP: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('An unexpected error occurred: $e');
-    }
-  }
-
-  Future<void> verifyOtp(String email, String otp) async {
-    try {
-      final signInMethods = await _firebaseAuth.fetchSignInMethodsForEmail(
-        email,
-      );
-      if (signInMethods.contains('emailLink')) {
-        await _firebaseAuth.signInWithEmailLink(email: email, emailLink: otp);
-      } else {
-        throw Exception('Invalid OTP');
-      }
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      throw Exception('Error verifying OTP: ${e.message}');
-    } catch (e) {
-      throw Exception('An unexpected error occurred: $e');
-    }
-  }
+ 
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
@@ -170,4 +128,6 @@ class FirebaseAuthService {
       throw Exception('An unexpected error occurred: $e');
     }
   }
+
+
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/data/models/cctv_model.dart';
 import 'package:tes_gradle/features/presentation/provider/cctv_provider.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
-import 'package:go_router/go_router.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:url_launcher/url_launcher.dart'; // Ensure this import is present
 
 class PantauMalangScreen extends StatefulWidget {
@@ -17,128 +20,119 @@ class PantauMalangScreen extends StatefulWidget {
 
 class _PantauMalangScreenState extends State<PantauMalangScreen> {
   late GoogleMapController _mapController;
-  final LatLng _center = const LatLng(-7.983908, 112.621391);
-
-  String? _selectedTitle;
-  String? _selectedDescription;
-  String? _selectedLinkCCTV;
-  LatLng? _selectedPosition;
-  String? _locationName;
-
+  LatLng? _userLocation;
   Set<Marker> _markers = {};
+  Circle? _userCircle;
 
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController linkController = TextEditingController();
+  // Define a fallback center location
+  final LatLng _center = const LatLng(-7.983908, 112.621391); // Malang center
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeUserLocation();
       _fetchCCTVs();
+      _trackUserLocation();
     });
+  }
+
+  Future<void> _initializeUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    _userLocation = LatLng(position.latitude, position.longitude);
+
+    setState(() {
+      _userCircle = Circle(
+        circleId: const CircleId('user_circle'),
+        center: _userLocation!,
+        radius: 50, // 50 meters radius
+        fillColor: Colors.blue.withOpacity(0.2),
+        strokeColor: Colors.blue,
+        strokeWidth: 2,
+      );
+
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('user_location'),
+          position: _userLocation!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow: const InfoWindow(title: 'Your Location'),
+        ),
+      );
+    });
+
+    // Center the map on the user's location
+    _mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(_userLocation!, 16.0),
+    );
   }
 
   Future<void> _fetchCCTVs() async {
     final cctvProvider = Provider.of<CCTVProvider>(context, listen: false);
     await cctvProvider.fetchAllCCTVs();
     setState(() {
-      _markers =
-          cctvProvider.cctvList?.map((cctv) {
-            return Marker(
-              markerId: cctv.markerId,
-              position: cctv.position,
-              infoWindow: cctv.infoWindow,
-              onTap: () {
-                _onMarkerTapped(
-                  cctv.infoWindow.title ?? '',
-                  'Description for ${cctv.infoWindow.title}',
-                  cctv.linkCCTV,
-                );
-              },
-            );
-          }).toSet() ??
-          {};
-    });
-  }
-
-  void _onMarkerTapped(String title, String description, String linkCCTV) {
-    setState(() {
-      _selectedTitle = title;
-      _selectedDescription = description;
-      _selectedLinkCCTV = linkCCTV;
-    });
-  }
-
-  Future<void> _onMapTapped(LatLng position) async {
-    setState(() {
-      _selectedPosition = position;
-      _selectedTitle = null;
-      _selectedDescription = null;
-      _selectedLinkCCTV = null;
-      _markers.add(
-        Marker(
-          markerId: MarkerId('selected_position'),
-          position: position,
-          infoWindow: InfoWindow(title: 'Selected Position'),
-        ),
+      _markers.addAll(
+        cctvProvider.cctvList?.map((cctv) {
+              return Marker(
+                markerId: cctv.markerId,
+                position: cctv.position,
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue,
+                ),
+              );
+            }).toSet() ??
+            {},
       );
     });
+  }
 
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-      position.latitude,
-      position.longitude,
-    );
-    if (placemarks.isNotEmpty) {
+  Future<void> _trackUserLocation() async {
+    Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((Position position) {
       setState(() {
-        _locationName = placemarks.first.name ?? 'Unknown location';
+        _userLocation = LatLng(position.latitude, position.longitude);
+
+        // Update the user's marker
+        _markers.removeWhere(
+          (marker) => marker.markerId.value == 'user_location',
+        );
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('user_location'),
+            position: _userLocation!,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue,
+            ),
+            infoWindow: const InfoWindow(title: 'Your Location'),
+          ),
+        );
+
+        // Update the user's circle
+        _userCircle = Circle(
+          circleId: const CircleId('user_circle'),
+          center: _userLocation!,
+          radius: 50, // 50 meters radius
+          fillColor: Colors.blue.withOpacity(0.2),
+          strokeColor: Colors.blue,
+          strokeWidth: 2,
+        );
       });
-    } else {
-      setState(() {
-        _locationName = 'Unknown location';
-      });
-    }
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-  }
-
-  void _addCCTV(String title, String link, String locationName) {
-    if (_selectedPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a location on the map first.')),
-      );
-      return;
-    }
-
-    final cctvProvider = Provider.of<CCTVProvider>(context, listen: false);
-    final newCCTV = CCTVModel(
-      markerId: MarkerId('new_cctv_${_selectedPosition.toString()}'),
-      position: _selectedPosition!,
-      infoWindow: InfoWindow(title: title, snippet: locationName),
-      linkCCTV: link,
-    );
-    cctvProvider.addCCTV(newCCTV);
-    setState(() {
-      _markers.add(
-        Marker(
-          markerId: newCCTV.markerId,
-          position: newCCTV.position,
-          infoWindow: newCCTV.infoWindow,
-          onTap: () {
-            _onMarkerTapped(
-              newCCTV.infoWindow.title ?? '',
-              'Description for ${newCCTV.infoWindow.title} at $locationName',
-              newCCTV.linkCCTV,
-            );
-          },
-        ),
-      );
-      _selectedPosition = null; // Clear the selected position after adding
-      _locationName = null; // Clear the location name after adding
-      titleController.clear(); // Clear the title controller
-      linkController.clear(); // Clear the link controller
     });
+  }
+
+  double _calculateDistance(LatLng start, LatLng end) {
+    return Geolocator.distanceBetween(
+      start.latitude,
+      start.longitude,
+      end.latitude,
+      end.longitude,
+    );
   }
 
   void _launchURL(String url) async {
@@ -151,22 +145,54 @@ class _PantauMalangScreenState extends State<PantauMalangScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pantau Malang'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go(AppRoutes.homepage); // Navigate to a valid route
-          },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'Pantau Malang',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go(AppRoutes.navbar);
+            },
+          ),
         ),
       ),
       body: Stack(
         children: [
           GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 14.0),
+            onMapCreated: (controller) {
+              _mapController = controller;
+              if (_userLocation != null) {
+                _mapController.animateCamera(
+                  CameraUpdate.newLatLngZoom(
+                    _userLocation!,
+                    14.0,
+                  ), // Center on user location
+                );
+              }
+            },
+            initialCameraPosition: CameraPosition(
+              target:
+                  _userLocation ??
+                  _center, // Use user location if available, fallback to _center
+              zoom: 14.0,
+            ),
             markers: _markers,
-            onTap: _onMapTapped,
+            circles: _userCircle != null ? {_userCircle!} : {},
           ),
           Positioned(
             top: 20,
@@ -194,105 +220,6 @@ class _PantauMalangScreenState extends State<PantauMalangScreen> {
               ),
             ),
           ),
-          if (_selectedPosition != null)
-            Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 150,
-              left: 20,
-              right: 20,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 8,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: titleController,
-                        decoration: InputDecoration(labelText: 'CCTV Name'),
-                      ),
-                      TextField(
-                        controller: linkController,
-                        decoration: InputDecoration(labelText: 'CCTV Link'),
-                      ),
-                      SizedBox(height: 8),
-                      Text('Location: $_locationName'),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            _addCCTV(
-                              titleController.text,
-                              linkController.text,
-                              _locationName ?? 'Unknown location',
-                            );
-                          },
-                          child: const Text('Add CCTV'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          if (_selectedTitle != null && _selectedDescription != null)
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 8,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _selectedTitle!,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _selectedDescription!,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      if (_selectedLinkCCTV != null)
-                        Text(
-                          'Link CCTV: $_selectedLinkCCTV',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedTitle = null;
-                              _selectedDescription = null;
-                              _selectedLinkCCTV = null;
-                            });
-                          },
-                          child: const Text('Close'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           Positioned(
             bottom: 20,
             left: 0,
@@ -307,42 +234,98 @@ class _PantauMalangScreenState extends State<PantauMalangScreen> {
                     itemCount: cctvList.length,
                     itemBuilder: (context, index) {
                       final cctv = cctvList[index];
-                      return GestureDetector(
-                        onTap: () {
-                          _launchURL(cctv.linkCCTV);
-                        },
-                        child: Card(
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 8,
-                          child: Container(
-                            width: 200,
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  cctv.infoWindow.title ?? 'No Title',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Link: ${cctv.linkCCTV}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.blue,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
+                      return FutureBuilder<List<Placemark>>(
+                        future: placemarkFromCoordinates(
+                          cctv.position.latitude,
+                          cctv.position.longitude,
                         ),
+                        builder: (context, snapshot) {
+                          String locationName = 'Loading location...';
+                          if (snapshot.connectionState ==
+                                  ConnectionState.done &&
+                              snapshot.hasData &&
+                              snapshot.data!.isNotEmpty) {
+                            locationName =
+                                snapshot.data!.first.name ?? 'Unknown location';
+                          }
+
+                          double? distance;
+                          if (_userLocation != null) {
+                            distance = _calculateDistance(
+                              _userLocation!,
+                              cctv.position,
+                            );
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              _mapController.animateCamera(
+                                CameraUpdate.newLatLngZoom(cctv.position, 16.0),
+                              );
+                              _launchURL(cctv.linkCCTV); // Launch the CCTV link
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                side: const BorderSide(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                              ),
+                              elevation: 8,
+                              child: Container(
+                                width: 250,
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        'assets/images/cctv-logo.png',
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            cctv.infoWindow.title ?? 'No Title',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            locationName,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          if (distance != null)
+                                            Text(
+                                              'Jarak: ${(distance / 1000).toStringAsFixed(2)} km', // Convert meters to kilometers
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );

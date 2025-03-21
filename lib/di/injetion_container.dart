@@ -12,10 +12,9 @@ import 'package:tes_gradle/features/domain/repositories/user_repository.dart';
 import 'package:tes_gradle/features/domain/repositories/lapor_repository.dart';
 import 'package:tes_gradle/features/domain/usecases/forgot_password.dart';
 import 'package:tes_gradle/features/domain/usecases/get_user_data.dart';
+import 'package:tes_gradle/features/domain/usecases/update_user.dart';
 import 'package:tes_gradle/features/domain/usecases/login_user.dart';
 import 'package:tes_gradle/features/domain/usecases/register_user.dart';
-import 'package:tes_gradle/features/domain/usecases/send_otp.dart';
-import 'package:tes_gradle/features/domain/usecases/verify_otp.dart';
 import 'package:tes_gradle/features/domain/usecases/account_exists.dart';
 import 'package:tes_gradle/features/domain/usecases/create_laporan.dart';
 import 'package:tes_gradle/features/domain/usecases/read_laporan.dart';
@@ -44,10 +43,15 @@ import 'package:tes_gradle/features/domain/repositories/cctv_repository.dart';
 import 'package:tes_gradle/features/domain/usecases/get_all_cctvs.dart';
 import 'package:tes_gradle/features/domain/usecases/add_cctv.dart';
 import 'package:tes_gradle/features/presentation/provider/cctv_provider.dart';
+import 'package:tes_gradle/features/data/datasources/berita_data_service.dart';
+import 'package:tes_gradle/features/data/repositories/berita_repository_impl.dart';
+import 'package:tes_gradle/features/domain/repositories/berita_repository.dart';
+import 'package:tes_gradle/features/domain/usecases/berita_usecases.dart';
 
 final sl = GetIt.instance;
 
 void setupDependencyInjection() {
+  // Firebase
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
 
   // Data Layer
@@ -58,11 +62,18 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<StatusHistoryDataService>(
     () => StatusHistoryDataService(),
   );
+  sl.registerLazySingleton<NotificationDataService>(
+    () => NotificationDataService(),
+  );
+  sl.registerLazySingleton<CCTVDataService>(() => CCTVDataService());
+  sl.registerLazySingleton<BeritaDataService>(
+    () => BeritaDataService(FirebaseFirestore.instance),
+  );
 
   // Repository Layer
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoriesImpl(sl<UserDataService>(), sl<FirebaseFirestore>()),
+    () => UserRepositoriesImpl(sl<UserDataService>()),
   );
   sl.registerLazySingleton<LaporRepository>(
     () =>
@@ -71,17 +82,23 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<StatusHistoryRepository>(
     () => StatusHistoryRepositoryImpl(sl<StatusHistoryDataService>()),
   );
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<CCTVRepository>(() => CCTVRepositoryImpl(sl()));
+  sl.registerLazySingleton<BeritaRepository>(() => BeritaRepositoryImpl(sl()));
 
   // Use Cases
   sl.registerLazySingleton<LoginUser>(() => LoginUser(sl()));
   sl.registerLazySingleton<RegisterUser>(() => RegisterUser(sl()));
   sl.registerLazySingleton<ForgotPassword>(() => ForgotPassword(sl()));
-  sl.registerLazySingleton<SendOtp>(() => SendOtp(sl()));
-  sl.registerLazySingleton<VerifyOtp>(() => VerifyOtp(sl()));
   sl.registerLazySingleton<AccountExists>(() => AccountExists(sl()));
   sl.registerLazySingleton<GetUserData>(
     () => GetUserData(sl<UserRepository>()),
   );
+  sl.registerLazySingleton<UpdateUser>(
+    () => UpdateUser(sl<UserRepository>()),
+  ); // Register UpdateUser use case
   sl.registerLazySingleton<CreateLaporan>(() => CreateLaporan(sl()));
   sl.registerLazySingleton<ReadLaporan>(() => ReadLaporan(sl()));
   sl.registerLazySingleton<UpdateLaporan>(() => UpdateLaporan(sl()));
@@ -105,6 +122,16 @@ void setupDependencyInjection() {
   sl.registerLazySingleton<GetStatusHistoryByLaporanId>(
     () => GetStatusHistoryByLaporanId(sl()),
   );
+  sl.registerLazySingleton<CreateNotification>(() => CreateNotification(sl()));
+  sl.registerLazySingleton<GetNotificationsByUserId>(
+    () => GetNotificationsByUserId(sl()),
+  );
+  sl.registerLazySingleton<GetAllCCTVs>(() => GetAllCCTVs(sl()));
+  sl.registerLazySingleton<AddCCTV>(() => AddCCTV(sl()));
+  sl.registerLazySingleton<FetchAllBerita>(() => FetchAllBerita(sl()));
+  sl.registerLazySingleton<CreateBerita>(() => CreateBerita(sl()));
+  sl.registerLazySingleton<UpdateBerita>(() => UpdateBerita(sl()));
+  sl.registerLazySingleton<DeleteBerita>(() => DeleteBerita(sl()));
 
   // Providers
   sl.registerLazySingleton<AuthProvider>(
@@ -112,13 +139,15 @@ void setupDependencyInjection() {
       loginUser: sl(),
       registerUser: sl(),
       forgotPassword: sl(),
-      sendOtp: sl(),
-      verifyOtp: sl(),
       accountExists: sl(),
     ),
   );
   sl.registerLazySingleton<UserProvider>(
-    () => UserProvider(sl<GetUserData>(), sl<FirebaseFirestore>()),
+    () => UserProvider(
+      sl<GetUserData>(),
+      sl<UpdateUser>(), // Pass the UpdateUser use case
+      sl<FirebaseFirestore>(),
+    ),
   );
   sl.registerLazySingleton<LaporProvider>(
     () => LaporProvider(
@@ -142,20 +171,6 @@ void setupDependencyInjection() {
       sl<GetStatusHistoryByLaporanId>(),
     ),
   );
-
-  // Notification
-  sl.registerLazySingleton(() => NotificationDataService());
-  sl.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepositoryImpl(sl()),
-  );
-  sl.registerLazySingleton(() => CreateNotification(sl()));
-  sl.registerLazySingleton(() => GetNotificationsByUserId(sl()));
   sl.registerFactory(() => NotificationProvider(sl(), sl()));
-
-  // CCTV
-  sl.registerLazySingleton<CCTVDataService>(() => CCTVDataService());
-  sl.registerLazySingleton<CCTVRepository>(() => CCTVRepositoryImpl(sl()));
-  sl.registerLazySingleton(() => GetAllCCTVs(sl()));
-  sl.registerLazySingleton(() => AddCCTV(sl()));
   sl.registerFactory(() => CCTVProvider(sl(), sl()));
 }

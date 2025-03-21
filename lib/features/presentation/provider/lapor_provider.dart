@@ -76,7 +76,7 @@ class LaporProvider with ChangeNotifier {
         laporanId: laporan.id,
         status: 'Menunggu',
         description: 'Laporan dibuat',
-        imageUrl: '',
+        imageUrl: laporan.foto,
         timeStamp: DateTime.now(),
       );
       final createdStatusHistory = await _createStatusHistory.call(
@@ -168,14 +168,25 @@ class LaporProvider with ChangeNotifier {
   }
 
   Future<void> fetchUserReports(String userId) async {
-    _setLoading(true);
     try {
-      _userReports = await _getUserReports.call(userId);
+      print('Fetching reports for user ID: $userId'); // Debug log
+      final querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('laporan')
+              .where('uid', isEqualTo: userId) // Filter by userId
+              .get();
+
+      print(
+        'Query returned ${querySnapshot.docs.length} documents',
+      ); // Debug log
+
+      _userReports =
+          querySnapshot.docs.map((doc) => Laporan.fromFirestore(doc)).toList();
+
+      print('User reports fetched: $_userReports'); // Debug log
       notifyListeners();
     } catch (e) {
       print('Error fetching user reports: $e');
-    } finally {
-      _setLoading(false);
     }
   }
 

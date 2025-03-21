@@ -6,6 +6,7 @@ import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart'; // Add this import for reverse geocoding
 
 class LaporSayaScreen extends StatefulWidget {
   const LaporSayaScreen({super.key});
@@ -24,11 +25,25 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
   final TextEditingController _fotoController = TextEditingController();
 
   Future<void> _setCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    _lokasiController.text =
-        'Lat: ${position.latitude}, Lng: ${position.longitude}';
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        _lokasiController.text =
+            '${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+      } else {
+        _lokasiController.text = 'Lokasi tidak ditemukan';
+      }
+    } catch (e) {
+      _lokasiController.text = 'Gagal mendapatkan lokasi';
+    }
   }
 
   @override
@@ -50,10 +65,22 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildCategoryCard('Layanan Sosial', Icons.handshake),
-                  _buildCategoryCard('Pelayanan Umum', Icons.account_balance),
-                  _buildCategoryCard('Keamanan & Ketertiban', Icons.security),
-                  _buildCategoryCard('Infrastruktur', Icons.construction),
+                  _buildCategoryCard(
+                    'Layanan Sosial',
+                    'assets/images/layanan.png',
+                  ),
+                  _buildCategoryCard(
+                    'Pelayanan Umum',
+                    'assets/images/pelayanan.png',
+                  ),
+                  _buildCategoryCard(
+                    'Keamanan & Ketertiban',
+                    'assets/images/keamanan.png',
+                  ),
+                  _buildCategoryCard(
+                    'Infrastruktur',
+                    'assets/images/infrastruktur.png',
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -86,7 +113,7 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
     );
   }
 
-  Widget _buildCategoryCard(String label, IconData icon) {
+  Widget _buildCategoryCard(String label, String assetPath) {
     final bool isSelected = _selectedCategory == label;
 
     return GestureDetector(
@@ -102,16 +129,12 @@ class _LaporSayaScreenState extends State<LaporSayaScreen> {
           side: BorderSide(color: AppColors.c2a6892),
         ),
         child: SizedBox(
-          width: 70,
-          height: 70,
+          width: 85,
+          height: 90,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 25,
-                color: isSelected ? Colors.white : AppColors.c2a6892,
-              ),
+              Image.asset(assetPath, width: 45, height: 45),
               const SizedBox(height: 8),
               Text(
                 label,

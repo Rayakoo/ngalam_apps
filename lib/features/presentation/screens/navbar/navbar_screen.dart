@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import Provider
 import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_alamat.dart'; // Import PopUpAlamatScreen
 import 'package:tes_gradle/features/presentation/style/color.dart';
+import 'package:tes_gradle/features/presentation/provider/user_provider.dart'; // Import UserProvider
 
 class NavbarScreen extends StatefulWidget {
   const NavbarScreen({super.key});
@@ -19,6 +22,29 @@ class _NavbarScreenState extends State<NavbarScreen> {
     setState(() {
       _selectedIndex = index;
     });
+
+    if (index == 3) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final user = userProvider.userData;
+
+      print('User data in NavbarScreen: $user'); // Debug print statement
+
+      if (user?['address'] == '-') {
+        print('Address is "-", showing dialog'); // Debug print statement
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const PopUpAlamatScreen();
+            },
+          );
+        });
+      } else {
+        print(
+          'Address is not "-", not showing dialog',
+        ); // Debug print statement
+      }
+    }
   }
 
   @override
@@ -27,8 +53,8 @@ class _NavbarScreenState extends State<NavbarScreen> {
       body: IndexedStack(
         index: _selectedIndex,
         children: const [
-          ActivityScreen(),
           HomeScreen(),
+          ActivityScreen(),
           NotificationScreen(),
           ProfileScreen(),
         ],
@@ -40,16 +66,13 @@ class _NavbarScreenState extends State<NavbarScreen> {
         selectedItemColor: AppColors.c2a6892,
         unselectedItemColor: Colors.blueGrey,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_run),
-            label: 'Activity',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Homepage'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+          BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Aktivitas'),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
-            label: 'Notification',
+            label: 'Notifikasi',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
