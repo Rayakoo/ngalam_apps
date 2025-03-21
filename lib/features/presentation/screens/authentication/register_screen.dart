@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart'; 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tes_gradle/features/domain/entities/user.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
-import 'pop_up_berhasil.dart'; 
+import 'pop_up_berhasil.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -298,7 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       if (mounted) {
-        await FirebaseAuth.instance.signOut(); // Sign out the user
+        await FirebaseAuth.instance.signOut();
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -307,9 +307,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               description:
                   'Silahkan masuk menggunakan Email dan Password Anda!',
               buttonText: 'Masuk',
+              
             );
           },
-        );
+        ).then((_) {
+          // Automatically navigate to login screen after dialog is dismissed
+          Navigator.of(context).pushReplacementNamed(AppRoutes.auth);
+        });
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';

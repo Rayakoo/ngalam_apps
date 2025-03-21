@@ -44,13 +44,13 @@ class _WelcomePageState extends State<WelcomePage> {
   ];
 
   final List<String> backgroundImages = [
-    "assets/images/background-welcome.png",
-    "assets/images/background-welcome.png",
+    "assets/images/background.png",
+    "assets/images/background.png",
   ];
 
   final List<String> topImages = [
-    'assets/images/orang.png',
-    'assets/images/orang-2.png',
+    'assets/images/orang-berhasil.png',
+    'assets/images/orang-lupa.png',
   ];
 
   void _nextPage() {

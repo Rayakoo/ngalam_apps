@@ -23,147 +23,153 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            height: screenHeight,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-            ), // Background putih (full layar)
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: screenHeight * 0.5,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Image.asset(
-                      'assets/images/orang-login.png',
-                      width: 811,
-                      height: 900,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: screenHeight * 0.28,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.cce1f0, // Light blue background
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(30),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 20,
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 40),
-                            Text(
-                              'Masuk',
-                              style: AppTextStyles.heading_2_medium.copyWith(
-                                color: AppColors.c1f4d6b,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Masuk untuk Mulai',
-                              style: AppTextStyles.heading_4_regular.copyWith(
-                                color: AppColors.c1f4d6b,
-                              ),
-                            ),
-                            SizedBox(height: 30),
-                            _buildTextField(
-                              'Email',
-                              _emailController,
-                              false,
-                              Icons.email_outlined,
-                            ),
-                            SizedBox(height: 18),
-                            _buildTextField(
-                              'Kata Sandi',
-                              _passwordController,
-                              true,
-                              Icons.lock_outline,
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    context.push(AppRoutes.forgotPassword);
-                                  },
-                                  child: Text(
-                                    'Lupa kata Sandi?',
-                                    style: AppTextStyles.paragraph_14_medium
-                                        .copyWith(color: Color(0xFFFF0000)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 30),
-                            _buildLoginButton(),
-                            SizedBox(height: 20),
-                            Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Belum memiliki akun? ',
-                                    style: AppTextStyles.paragraph_14_regular
-                                        .copyWith(color: AppColors.c2a6892),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      context.go(AppRoutes.register);
-                                    },
-                                    child: Text(
-                                      'Daftar',
-                                      style: TextStyle(
-                                        color: AppColors.c1f4d6b,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenHeight = constraints.maxHeight;
+            double screenWidth = constraints.maxWidth;
+
+            return SingleChildScrollView(
+              child: Container(
+                width: screenWidth,
+                height: screenHeight,
+                decoration: BoxDecoration(color: AppColors.white),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: screenHeight * 0.5,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          'assets/images/orang-login.png',
+                          width: screenWidth * 0.8,
+                          height: screenHeight * 0.4,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      top: screenHeight * 0.28,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.cce1f0,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(30),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.05,
+                            vertical: screenHeight * 0.02,
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: screenHeight * 0.05),
+                                Text(
+                                  'Masuk',
+                                  style: AppTextStyles.heading_2_medium
+                                      .copyWith(color: AppColors.c1f4d6b),
+                                ),
+                                SizedBox(height: screenHeight * 0.01),
+                                Text(
+                                  'Masuk untuk Mulai',
+                                  style: AppTextStyles.heading_4_regular
+                                      .copyWith(color: AppColors.c1f4d6b),
+                                ),
+                                SizedBox(height: screenHeight * 0.03),
+                                _buildTextField(
+                                  'Email',
+                                  _emailController,
+                                  false,
+                                  Icons.email_outlined,
+                                ),
+                                SizedBox(height: screenHeight * 0.02),
+                                _buildTextField(
+                                  'Kata Sandi',
+                                  _passwordController,
+                                  true,
+                                  Icons.lock_outline,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: screenHeight * 0.01,
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        context.push(AppRoutes.forgotPassword);
+                                      },
+                                      child: Text(
+                                        'Lupa kata Sandi?',
+                                        style: AppTextStyles.paragraph_14_medium
+                                            .copyWith(color: Color(0xFFFF0000)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: screenHeight * 0.03),
+                                _buildLoginButton(),
+                                SizedBox(height: screenHeight * 0.02),
+                                Center(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Belum memiliki akun? ',
+                                        style: AppTextStyles
+                                            .paragraph_14_regular
+                                            .copyWith(color: AppColors.c2a6892),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          context.go(AppRoutes.register);
+                                        },
+                                        child: Text(
+                                          'Daftar',
+                                          style: TextStyle(
+                                            color: AppColors.c1f4d6b,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: screenHeight * 0.01),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Image.asset(
+                        'assets/images/bangunan.png',
+                        width: screenWidth,
+                        height: screenHeight * 0.1,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Image.asset(
-                    'assets/images/bangunan.png',
-                    width: 720,
-                    height: 120,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
