@@ -1,19 +1,23 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:tes_gradle/features/domain/entities/berita.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/screens/activity/activity_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/activity/deskripsi_status.dart';
+import 'package:tes_gradle/features/presentation/screens/admin/admin_pantau_malang.dart';
 import 'package:tes_gradle/features/presentation/screens/notification/notification_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/panggilan/pop_up_panggilan.dart';
+import 'package:tes_gradle/features/presentation/screens/profile/edit_profile_screen.dart';
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_alamat.dart';
 import 'package:tes_gradle/features/presentation/screens/profile/profile_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/login_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:tes_gradle/features/presentation/screens/splash/splash_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/welcome_page.dart';
+import 'package:tes_gradle/features/presentation/screens/onboarding/welcome_page_child1.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/forgot_pass_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/authentication/send_otp_email_screen.dart';
-import 'package:tes_gradle/features/presentation/screens/authentication/verify_otp_email_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/authentication/reset_password_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/navbar/navbar_screen.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/laporek/laporek_bar.dart';
@@ -24,6 +28,12 @@ import 'package:tes_gradle/features/presentation/screens/admin/detail_laporan_ad
 import 'package:tes_gradle/features/presentation/screens/activity/detail_status_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
+import 'package:tes_gradle/features/presentation/screens/panggilan/panggilan_option.dart';
+import 'package:tes_gradle/features/presentation/screens/pantau_malang/pantau_malang_screen.dart'; // Add this line
+import 'package:tes_gradle/features/presentation/screens/authentication/ketentuan_kebijakan_screen.dart'; // Ensure this line exists
+import 'package:tes_gradle/features/presentation/screens/profile/ganti_password.dart'; // Import GantiPasswordScreen
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_ulasan.dart'; // Import PopUpUlasanScreen
+import 'package:tes_gradle/features/presentation/screens/beranda/detail_berita_screen.dart'; // Import DetailBeritaScreen
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -36,7 +46,8 @@ class AppRouter {
           state.subloc == AppRoutes.forgotPassword ||
           state.subloc == AppRoutes.sendOtpEmail ||
           state.subloc == AppRoutes.verifyOtpEmail ||
-          state.subloc == AppRoutes.resetPassword;
+          state.subloc == AppRoutes.resetPassword ||
+          state.subloc == AppRoutes.ketentuanKebijakan;
       final isSplash = state.subloc == AppRoutes.splash;
 
       print('Current route: ${state.subloc}');
@@ -44,7 +55,9 @@ class AppRouter {
         print('Allowing splash screen to navigate');
         return null;
       }
-      if (user == null && !loggingIn) {
+      if (user == null &&
+          !loggingIn &&
+          state.subloc != AppRoutes.ketentuanKebijakan) {
         print('Redirecting to: ${AppRoutes.auth}');
         return AppRoutes.auth;
       }
@@ -54,7 +67,7 @@ class AppRouter {
         if (userProvider.userRole == 'admin') {
           print('Redirecting to: ${AppRoutes.admin}');
           return AppRoutes.admin;
-        } else {
+        } else if (state.subloc != AppRoutes.ketentuanKebijakan) {
           print('Redirecting to: ${AppRoutes.navbar}');
           return AppRoutes.navbar;
         }
@@ -133,23 +146,7 @@ class AppRouter {
           return const ForgotPassScreen();
         },
       ),
-      GoRoute(
-        path: AppRoutes.sendOtpEmail,
-        name: 'sendOtpEmail',
-        builder: (BuildContext context, GoRouterState state) {
-          print('Navigating to SendOTPEmailScreen');
-          return SendOTPEmailScreen();
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.verifyOtpEmail,
-        name: 'verifyOtpEmail',
-        builder: (BuildContext context, GoRouterState state) {
-          final email = state.extra as String;
-          print('Navigating to VerifyOTPEmailScreen');
-          return VerifyOTPEmailScreen(email: email);
-        },
-      ),
+
       GoRoute(
         path: AppRoutes.resetPassword,
         name: 'resetPassword',
@@ -209,6 +206,97 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           final laporan = state.extra as Laporan;
           return DetailStatusScreen(laporan: laporan);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.panggilanOption, // Add this route
+        name: 'panggilanOption',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to PanggilanOptionScreen');
+          return const PanggilanOptionScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pantauMalang,
+        name: 'pantauMalang',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PantauMalangScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.ketentuanKebijakan,
+        name: 'ketentuanKebijakan',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to KetentuanKebijakanScreen');
+          return const KetentuanKebijakanScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.gantiPassword,
+        name: 'gantiPassword',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to GantiPasswordScreen');
+          return const GantiPasswordScreen();
+        },
+      ),
+      GoRoute(
+        path: '/deskripsiStatus',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DeskripsiStatusScreen(
+            imageUrl: extra['imageUrl'],
+            date: extra['date'],
+            description: extra['description'],
+            status: extra['status'],
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.popUpUlasan,
+        name: 'popUpUlasan',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to PopUpUlasanScreen');
+          return const PopUpUlasanScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.popUpAlamat,
+        builder: (context, state) {
+          return const PopUpAlamatScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.popUpPanggilan,
+        name: 'popUpPanggilan',
+        builder: (BuildContext context, GoRouterState state) {
+          final args = state.extra as Map<String, dynamic>;
+          return PopUpPanggilan(
+            imagePath: args['imagePath'],
+            title: args['title'],
+            phoneNumber: args['phoneNumber'],
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminPantauMalang,
+        name: 'adminPantauMalang',
+        builder: (BuildContext context, GoRouterState state) {
+          print('Navigating to AdminPantauMalangScreen');
+          return const AdminPantauMalangScreen();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.detailBerita,
+        builder: (context, state) {
+          final berita = state.extra as Berita;
+          return DetailBeritaScreen(berita: berita);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        name: 'editProfile',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EditProfileScreen();
         },
       ),
     ],

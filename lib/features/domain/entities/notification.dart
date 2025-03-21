@@ -19,5 +19,6 @@ class Notification {
     'Peringatan',
     'Berita',
     'Pemberitahuan',
+    'Komentar',
   ];
 }

@@ -19,7 +19,7 @@ class LaporRepositoryImpl implements LaporRepository {
       kategoriLaporan: laporan.kategoriLaporan,
       judulLaporan: laporan.judulLaporan,
       keteranganLaporan: laporan.keteranganLaporan,
-      lokasiKejadian: laporan.lokasiKejadian,
+      lokasiKejadian: laporan.lokasiKejadian, // Change to GeoPoint
       foto: laporan.foto,
       timeStamp: laporan.timeStamp,
       status: laporan.status,
@@ -35,7 +35,7 @@ class LaporRepositoryImpl implements LaporRepository {
       kategoriLaporan: createdLaporanModel.kategoriLaporan,
       judulLaporan: createdLaporanModel.judulLaporan,
       keteranganLaporan: createdLaporanModel.keteranganLaporan,
-      lokasiKejadian: createdLaporanModel.lokasiKejadian,
+      lokasiKejadian: createdLaporanModel.lokasiKejadian, // Change to GeoPoint
       foto: createdLaporanModel.foto,
       timeStamp: createdLaporanModel.timeStamp,
       status: createdLaporanModel.status,
@@ -54,7 +54,7 @@ class LaporRepositoryImpl implements LaporRepository {
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
-        lokasiKejadian: laporanModel.lokasiKejadian,
+        lokasiKejadian: laporanModel.lokasiKejadian, // Change to GeoPoint
         foto: laporanModel.foto,
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,
@@ -73,7 +73,7 @@ class LaporRepositoryImpl implements LaporRepository {
       kategoriLaporan: laporan.kategoriLaporan,
       judulLaporan: laporan.judulLaporan,
       keteranganLaporan: laporan.keteranganLaporan,
-      lokasiKejadian: laporan.lokasiKejadian,
+      lokasiKejadian: laporan.lokasiKejadian, // Change to GeoPoint
       foto: laporan.foto,
       timeStamp: laporan.timeStamp,
       status: laporan.status,
@@ -98,7 +98,7 @@ class LaporRepositoryImpl implements LaporRepository {
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
-        lokasiKejadian: laporanModel.lokasiKejadian,
+        lokasiKejadian: laporanModel.lokasiKejadian, // Change to GeoPoint
         foto: laporanModel.foto,
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,
@@ -118,7 +118,7 @@ class LaporRepositoryImpl implements LaporRepository {
         kategoriLaporan: laporanModel.kategoriLaporan,
         judulLaporan: laporanModel.judulLaporan,
         keteranganLaporan: laporanModel.keteranganLaporan,
-        lokasiKejadian: laporanModel.lokasiKejadian,
+        lokasiKejadian: laporanModel.lokasiKejadian, // Change to GeoPoint
         foto: laporanModel.foto,
         timeStamp: laporanModel.timeStamp,
         status: laporanModel.status,

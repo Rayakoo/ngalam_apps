@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart'; // Import Fluttertoast
 import 'package:tes_gradle/features/presentation/provider/auth_provider.dart';
-import 'package:tes_gradle/features/presentation/screens/authentication/send_otp_email_screen.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'pop_up_berhasil.dart'; // Import the PopUpBerhasilScreen
 
 class ForgotPassScreen extends StatefulWidget {
   const ForgotPassScreen({super.key});
@@ -23,106 +24,103 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-        ), // Background putih (full layar)
-
-        child: Stack(
-          children: [
-            Positioned(
-              top: 20,
-              left: 0,
-              right: 0,
-              height: screenHeight * 0.5,
-              child: Container(
-                alignment: Alignment.center,
-                child: Image.asset(
-                  'assets/images/orang-login.png',
-                  width: 811,
-                  height: 920,
-                ),
-              ),
-            ),
-            Positioned(
-              top: screenHeight * 0.32,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.cce1f0, // Light blue background
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Forgot Password',
-                          style: AppTextStyles.heading_2_medium.copyWith(
-                            color: AppColors.c1f4d6b,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Enter your email to reset your password',
-                          style: AppTextStyles.heading_4_regular.copyWith(
-                            color: AppColors.c1f4d6b,
-                          ),
-                        ),
-                        SizedBox(height: 30),
-
-                        _buildTextField(
-                          'Email',
-                          _emailController,
-                          false,
-                          Icons.email_outlined,
-                        ),
-                        SizedBox(height: 30),
-
-                        _buildResetButton(),
-
-                        SizedBox(height: 20),
-                        Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Remember your password? '),
-                              GestureDetector(
-                                onTap: () {
-                                  context.go(AppRoutes.auth);
-                                },
-                                child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    color: Color(0xFF2A6892),
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Image.asset(
-                          'assets/images/bangunan.png',
-                          width: 720,
-                          height: 120,
-                          fit: BoxFit.contain,
-                        ),
-                      ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            height: screenHeight,
+            decoration: BoxDecoration(color: AppColors.white),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: screenHeight * 0.5,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      'assets/images/orang-lupa.png',
+                      width: 811,
+                      height: 900,
                     ),
                   ),
                 ),
-              ),
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: AppColors.c1f4d6b),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: screenHeight * 0.35,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.cce1f0, // Light blue background
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 20,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 40),
+                            Text(
+                              'Lupa kata sandi',
+                              style: AppTextStyles.heading_2_medium.copyWith(
+                                color: AppColors.c1f4d6b,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Masukkan email untuk mengganti kata sandi',
+                              style: AppTextStyles.heading_4_regular.copyWith(
+                                color: AppColors.c1f4d6b,
+                              ),
+                            ),
+                            SizedBox(height: 30),
+                            _buildTextField(
+                              'Email',
+                              _emailController,
+                              false,
+                              Icons.email_outlined,
+                            ),
+                            SizedBox(height: 30),
+                            _buildResetButton(),
+                            SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Image.asset(
+                    'assets/images/bangunan.png',
+                    width: 720,
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -148,7 +146,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
         SizedBox(height: 4),
         Container(
           width: double.infinity,
-          height: 37,
+          height: 42,
           padding: const EdgeInsets.all(8),
           decoration: ShapeDecoration(
             color: Colors.white,
@@ -181,7 +179,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
       ),
       child: Center(
         child: Text(
-          'Reset Password',
+          'Kirim',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
@@ -202,20 +200,32 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
         listen: false,
       ).forgotPasswordEmail(email, context);
       // Tampilkan pesan sukses jika berhasil
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Password reset email sent. scrreen')),
-      // );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return PopUpBerhasilScreen(
+            title: 'Email Terkirim!',
+            description:
+                'Selanjutnya tolong cek Email anda untuk melanjutkan penggantian kata sandi',
+            buttonText: 'Lanjut',
+          );
+        },
+      );
     } on Exception catch (e) {
       if (e.toString().contains('No user found for that email')) {
         // Tampilkan pesan error jika akun tidak ada
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Account not found.')));
+        Fluttertoast.showToast(
+          msg: 'Account not found.',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
       } else {
         // Tampilkan pesan error jika terjadi kesalahan lain
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        Fluttertoast.showToast(
+          msg: 'Error: ${e.toString()}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
       }
     } finally {
       setState(() {

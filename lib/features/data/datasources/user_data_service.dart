@@ -1,35 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tes_gradle/features/domain/entities/user.dart';
+import 'package:tes_gradle/features/data/models/user_model.dart';
 
 class UserDataService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<Map<String, dynamic>?> getUserData() async {
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
     try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        print(
-          'Getting user data for UID: ${user.uid}',
-        ); // Debug print statement
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-          print('User data found: ${userDoc.data()}'); // Debug print statement
-          return userDoc.data() as Map<String, dynamic>;
-        } else {
-          print(
-            'No user data found for UID: ${user.uid}',
-          ); // Debug print statement
-        }
-      } else {
-        print('No current user logged in'); // Debug print statement
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (doc.exists) {
+        return doc.data();
       }
-      return null;
     } catch (e) {
       print('Error getting user data: $e');
-      return null;
+    }
+    return null;
+  }
+
+  Future<void> updateUser(String userId, Map<String, dynamic> userData) async {
+    try {
+      await _firestore.collection('users').doc(userId).update(userData);
+      print('User data updated successfully.');
+    } catch (e) {
+      print('Error updating user data: $e');
     }
   }
 }

@@ -4,8 +4,12 @@ import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart'; // Add this line
-import 'package:tes_gradle/features/presentation/router/approutes.dart'; // Add this line
+import 'package:go_router/go_router.dart';
+import 'package:tes_gradle/features/presentation/router/approutes.dart';
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_signout.dart'; // Import PopUpSignOutScreen
+import 'package:tes_gradle/features/presentation/screens/profile/ganti_password.dart'; // Import GantiPasswordScreen
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_ulasan.dart'; // Import PopUpUlasanScreen
+import 'package:tes_gradle/features/presentation/screens/profile/pop_up_alamat.dart'; // Import PopUpAlamatScreen
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,9 +30,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: AppColors.cce1f0,
+      backgroundColor: Color(0xFFF7FAFD), // Set the background color
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'Profil',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
       ),
       body: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
@@ -43,13 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Column(
                   children: [
-                    Container(height: 60, color: AppColors.white),
+                    Container(height: 60, color: Color(0xFFF7FAFD)),
                     const SizedBox(height: 50),
                     Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
+                      color: AppColors.white,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -108,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               alignment: Alignment.bottomRight,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Navigate to edit profile screen
+                                  context.push(AppRoutes.editProfile);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.c2a6892,
@@ -132,33 +154,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildProfileOption(
-                      context,
-                      icon: Icons.rate_review,
-                      title: 'Ulasan',
-                      subtitle: 'Tinggalkan ulasan Anda!',
-                      onTap: () {
-                        // Navigate to review screen
-                      },
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      color: AppColors.white,
+                      child: Column(
+                        children: [
+                          _buildProfileOption(
+                            context,
+                            icon: Icons.lock,
+                            title: 'Ubah Kata Sandi',
+                            subtitle: 'Ubah kata sandi Anda.',
+                            onTap: () {
+                              context.push(AppRoutes.gantiPassword);
+                            },
+                          ),
+                          _buildProfileOption(
+                            context,
+                            icon: Icons.rate_review,
+                            title: 'Ulasan',
+                            subtitle: 'Tinggalkan ulasan Anda!',
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const PopUpUlasanScreen();
+                                },
+                              );
+                            },
+                          ),
+                          _buildProfileOption(
+                            context,
+                            icon: Icons.description,
+                            title: 'Syarat dan Ketentuan',
+                            subtitle: 'Lihat ketentuan layanan kami.',
+                            onTap: () {
+                              print('Navigating to KetentuanKebijakanScreen');
+                              context.push(AppRoutes.ketentuanKebijakan);
+                            },
+                          ),
+                          _buildProfileOption(
+                            context,
+                            icon: Icons.logout,
+                            title: 'Keluar',
+                            subtitle: 'Keluar dari akun dengan aman.',
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return PopUpSignOutScreen(
+                                    title: 'Anda yakin ingin keluar?',
+                                    buttonTextYes: 'Ya',
+                                    buttonTextNo: 'Tidak',
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    _buildProfileOption(
-                      context,
-                      icon: Icons.description,
-                      title: 'Syarat dan Ketentuan',
-                      subtitle: 'Lihat ketentuan layanan kami.',
-                      onTap: () {
-                        // Navigate to terms and conditions screen
-                      },
-                    ),
-                    _buildProfileOption(
-                      context,
-                      icon: Icons.logout,
-                      title: 'Keluar',
-                      subtitle: 'Keluar dari akun dengan aman.',
-                      onTap: () {
-                        _logout();
-                      },
-                    ),
+                    SizedBox(height: 20),
                   ],
                 ),
                 Positioned(
@@ -209,6 +267,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
-    context.go(AppRoutes.auth); // Use context.go with the defined route
+    context.go(AppRoutes.auth);
   }
 }

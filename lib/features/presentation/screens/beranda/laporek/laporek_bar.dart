@@ -6,6 +6,7 @@ import 'package:tes_gradle/features/presentation/screens/beranda/laporek/lapor_w
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
+import 'package:tes_gradle/features/presentation/style/typography.dart';
 
 class LaporekBar extends StatefulWidget {
   const LaporekBar({super.key});
@@ -36,34 +37,52 @@ class _LaporekBarState extends State<LaporekBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.cce1f0,
-        title: const Text("Laporek"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go(AppRoutes.navbar);
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48.0),
-          child: Container(
-            color: AppColors.white, // Set the background color to white
-            child: TabBar(
-              controller: _tabController,
-              indicatorColor: AppColors.c2a6892, // Blue bottom border color
-              indicatorWeight: 3.0,
-              labelColor: AppColors.c2a6892, // Blue text color for selected tab
-              unselectedLabelColor:
-                  Colors.grey, // Grey text color for unselected tabs
-              tabs: const [Tab(text: 'Lapor Saya'), Tab(text: 'Lapor Warga')],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
             ),
+          ),
+          title: Text(
+            'Laporek',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go(AppRoutes.navbar);
+            },
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [LaporSayaScreen(), LaporWargaScreen()],
+      body: Column(
+        children: [
+          Container(
+            color: AppColors.white,
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: AppColors.c2a6892,
+              indicatorWeight: 3.0,
+              labelColor: AppColors.c2a6892,
+              unselectedLabelColor: Colors.grey,
+              tabs: const [Tab(text: 'Lapor Saya'), Tab(text: 'Lapor Warga')],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [LaporSayaScreen(), LaporWargaScreen()],
+            ),
+          ),
+        ],
       ),
     );
   }

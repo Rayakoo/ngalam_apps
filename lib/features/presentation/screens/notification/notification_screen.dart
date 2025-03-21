@@ -42,21 +42,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final notificationProvider = Provider.of<NotificationProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        backgroundColor: AppColors.cce1f0,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'Notifikasi',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
       ),
       body:
           notificationProvider.isLoading
               ? Center(child: CircularProgressIndicator())
               : Column(
                 children: [
+                  SizedBox(height: 30),
                   _buildDateFilter(),
                   Expanded(
                     child: Consumer<NotificationProvider>(
                       builder: (context, notificationProvider, child) {
-                        final notifications =
-                            notificationProvider.notificationList ?? [];
+                        final notifications = _filterNotifications(
+                          notificationProvider.notificationList ?? [],
+                        );
                         final groupedNotifications = _groupNotificationsByDate(
                           notifications,
                         );
@@ -103,7 +121,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       '1 Bulan terakhir',
     ];
     return Container(
-      height: 50,
+      height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: filters.length,
@@ -141,6 +159,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
+  List<domain.Notification> _filterNotifications(
+    List<domain.Notification> notifications,
+  ) {
+    final now = DateTime.now();
+    switch (_selectedFilter) {
+      case 'Hari ini':
+        return notifications.where((notification) {
+          return notification.waktu.year == now.year &&
+              notification.waktu.month == now.month &&
+              notification.waktu.day == now.day;
+        }).toList();
+      case '7 Hari terakhir':
+        return notifications.where((notification) {
+          return now.difference(notification.waktu).inDays < 7;
+        }).toList();
+      case '1 Bulan terakhir':
+        return notifications.where((notification) {
+          return now.difference(notification.waktu).inDays < 30;
+        }).toList();
+      default:
+        return notifications;
+    }
+  }
+
   Map<DateTime, List<domain.Notification>> _groupNotificationsByDate(
     List<domain.Notification> notifications,
   ) {
@@ -160,39 +202,65 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildNotificationCard(domain.Notification notification) {
+    String getImageForCategory(String category) {
+      switch (category) {
+        case 'Berita':
+          return 'assets/images/berita.png';
+        case 'Pemberitahuan':
+          return 'assets/images/pengumuman.png';
+        case 'Komentar':
+          return 'assets/images/profile_default.jpg';
+        default:
+          return 'assets/images/pengumuman.png';
+      }
+    }
+
     return Card(
+      color: Colors.white, // Set card color to white
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              notification.judul,
-              style: AppTextStyles.heading_4_bold.copyWith(
-                color: AppColors.c2a6892,
-              ),
+            CircleAvatar(
+              radius: 34,
+              backgroundColor: AppColors.c7db4d9,
+              child: Image.asset(getImageForCategory(notification.kategori)),
             ),
-            const SizedBox(height: 8),
-            Text(
-              notification.kategori,
-              style: AppTextStyles.paragraph_14_medium.copyWith(
-                color: AppColors.c3585ba,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              notification.deskripsi,
-              style: AppTextStyles.paragraph_14_regular.copyWith(
-                color: AppColors.c3585ba,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              DateFormat('HH:mm').format(notification.waktu),
-              style: AppTextStyles.paragraph_14_regular.copyWith(
-                color: AppColors.c3585ba,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: AppColors.cce1f0,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification.judul,
+                      style: AppTextStyles.heading_4_medium.copyWith(
+                        color: AppColors.c020608,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      notification.deskripsi,
+                      style: AppTextStyles.paragraph_14_regular.copyWith(
+                        color: AppColors.c020608,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      DateFormat('HH:mm').format(notification.waktu),
+                      style: AppTextStyles.paragraph_14_regular.copyWith(
+                        color: AppColors.c3585ba,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

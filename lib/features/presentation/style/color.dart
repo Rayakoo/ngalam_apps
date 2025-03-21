@@ -11,7 +11,9 @@ class AppColors {
   static const Color c143145 = Color(0xFF143145);
   static const Color c08141c = Color(0xFF08141C);
   static const Color c020608 = Color(0xFF020608);
-  static const Color white = Color(0xFFFFFFFF); // Warna putih
+  static const Color grey = Color(0xFF8D8D8D);
+  static const Color secondaryijo = Color(0xFF419090);
+  static const Color white = Color(0xFFFFFFFF); 
 
   static const MaterialColor primarySwatch = MaterialColor(
     0xFF2A6892, // Primary color

@@ -5,7 +5,7 @@ class GetUserData {
 
   GetUserData(this.repository);
 
-  Future<Map<String, dynamic>?> call() async {
-    return await repository.getUserData();
+  Future<Map<String, dynamic>?> call(String userId) async {
+    return await repository.getUserData(userId);
   }
 }

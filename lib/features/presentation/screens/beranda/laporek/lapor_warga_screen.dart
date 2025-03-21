@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
@@ -5,8 +6,9 @@ import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart';
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
-import 'package:tes_gradle/features/presentation/screens/beranda/laporek/detail_laporan_screen.dart'; 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:tes_gradle/features/presentation/screens/beranda/laporek/detail_laporan_screen.dart';
+import 'package:geocoding/geocoding.dart'; // Add this import for reverse geocoding
 
 class LaporWargaScreen extends StatefulWidget {
   const LaporWargaScreen({super.key});
@@ -429,23 +431,49 @@ class _LaporWargaScreenState extends State<LaporWargaScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Image.network(
-                  laporan.foto,
-                  height: 100,
-                  width: 130,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Text('Failed to load image');
-                  },
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    16.0,
+                  ), // Increased border radius
+                  child: Image.network(
+                    laporan.foto,
+                    height: 100,
+                    width: 130,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text('Failed to load image');
+                    },
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              laporan.lokasiKejadian,
-              style: AppTextStyles.paragraph_14_regular.copyWith(
-                color: AppColors.c3585ba,
-              ),
+            FutureBuilder<String>(
+              future: _getAddressFromCoordinates(laporan.lokasiKejadian),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text(
+                    'Memuat lokasi...',
+                    style: AppTextStyles.paragraph_14_regular.copyWith(
+                      color: AppColors.c3585ba,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(
+                    'Gagal memuat lokasi',
+                    style: AppTextStyles.paragraph_14_regular.copyWith(
+                      color: AppColors.c3585ba,
+                    ),
+                  );
+                } else {
+                  return Text(
+                    snapshot.data ?? 'Lokasi tidak ditemukan',
+                    style: AppTextStyles.paragraph_14_regular.copyWith(
+                      color: AppColors.c3585ba,
+                    ),
+                  );
+                }
+              },
             ),
             const SizedBox(height: 8),
             Row(
@@ -474,39 +502,58 @@ class _LaporWargaScreenState extends State<LaporWargaScreen> {
     );
   }
 
+  Future<String> _getAddressFromCoordinates(GeoPoint geoPoint) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        geoPoint.latitude,
+        geoPoint.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        return '${place.street}, ${place.subLocality}';
+      } else {
+        return 'Lokasi tidak ditemukan';
+      }
+    } catch (e) {
+      return 'Gagal mendapatkan lokasi';
+    }
+  }
+
   String _formatDate(DateTime date) {
     final DateFormat formatter = DateFormat('d MMMM yyyy', 'id_ID');
     return formatter.format(date);
   }
 
   Widget _buildStatusChip(String status) {
-    Color textColor;
-    Color borderColor;
+    Color textColor = Colors.white;
+    Color backgroundColor;
     switch (status) {
       case 'Menunggu':
-        textColor = Colors.blue;
-        borderColor = Colors.blue;
+        backgroundColor = Colors.blue;
         break;
       case 'Sedang Diproses':
-        textColor = Colors.orange;
-        borderColor = Colors.orange;
+        backgroundColor = Colors.orange;
         break;
       case 'Selesai':
-        textColor = Colors.green;
-        borderColor = Colors.green;
+        backgroundColor = Colors.green;
         break;
       default:
-        textColor = Colors.grey;
-        borderColor = Colors.grey;
+        backgroundColor = Colors.grey;
     }
 
-    return Chip(
-      label: Text(
-        status,
-        style: AppTextStyles.paragraph_14_regular.copyWith(color: textColor),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8.0),
       ),
-      backgroundColor: Colors.transparent,
-      shape: StadiumBorder(side: BorderSide(color: borderColor)),
+      child: Text(
+        status == 'Sedang Diproses' ? 'Sedang Diproses' : status,
+        style: AppTextStyles.paragraph_14_regular.copyWith(color: textColor),
+        textAlign:
+            status == 'Sedang Diproses' ? TextAlign.center : TextAlign.left,
+      ),
     );
   }
 

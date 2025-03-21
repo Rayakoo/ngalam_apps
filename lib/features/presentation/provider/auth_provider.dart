@@ -5,8 +5,6 @@ import 'package:tes_gradle/features/domain/entities/user.dart';
 import 'package:tes_gradle/features/domain/usecases/forgot_password.dart';
 import 'package:tes_gradle/features/domain/usecases/login_user.dart';
 import 'package:tes_gradle/features/domain/usecases/register_user.dart';
-import 'package:tes_gradle/features/domain/usecases/send_otp.dart';
-import 'package:tes_gradle/features/domain/usecases/verify_otp.dart';
 import 'package:tes_gradle/features/domain/usecases/account_exists.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/screens/beranda/home_screen.dart';
@@ -16,8 +14,6 @@ class AuthProvider with ChangeNotifier {
   final LoginUser loginUser;
   final RegisterUser registerUser;
   final ForgotPassword forgotPassword;
-  final SendOtp sendOtp;
-  final VerifyOtp verifyOtp;
   final AccountExists accountExists;
 
   String? _nomer_induk_kependudukan;
@@ -31,8 +27,7 @@ class AuthProvider with ChangeNotifier {
     required this.loginUser,
     required this.registerUser,
     required this.forgotPassword,
-    required this.sendOtp,
-    required this.verifyOtp,
+   
     required this.accountExists,
   });
 
@@ -142,52 +137,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> sendOtpEmail(String email, BuildContext context) async {
-    _setLoading(true);
-    _clearError();
-    try {
-      await sendOtp(SendOtpParams(email: email));
-      // Jika berhasil, tampilkan pesan sukses
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('OTP sent to email!')));
-      context.go(AppRoutes.verifyOtpEmail, extra: email);
-    } on Exception catch (e) {
-      // Tampilkan pesan error jika terjadi kesalahan
-      _setError(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_errorMessage ?? 'An error occurred')),
-      );
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<void> verifyOtpEmail(
-    String email,
-    String otp,
-    BuildContext context,
-  ) async {
-    _setLoading(true);
-    _clearError();
-    try {
-      await verifyOtp(VerifyOtpParams(email: email, otp: otp));
-      // Jika berhasil, tampilkan pesan sukses
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('OTP verified!')));
-      context.go(AppRoutes.resetPassword, extra: email);
-    } on Exception catch (e) {
-      // Tampilkan pesan error jika terjadi kesalahan
-      _setError(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_errorMessage ?? 'An error occurred')),
-      );
-    } finally {
-      _setLoading(false);
-    }
-  }
-
+  
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

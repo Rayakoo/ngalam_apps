@@ -57,15 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
     await firebaseAuthService.sendPasswordResetEmail(email);
   }
 
-  @override
-  Future<void> sendOtp(String email) async {
-    await firebaseAuthService.sendOtp(email);
-  }
-
-  @override
-  Future<void> verifyOtp(String email, String otp) async {
-    await firebaseAuthService.verifyOtp(email, otp);
-  }
+  
 
   @override
   Future<bool> accountExists(String email) async {

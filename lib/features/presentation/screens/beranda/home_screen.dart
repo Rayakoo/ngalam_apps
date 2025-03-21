@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/presentation/provider/user_provider.dart';
-
-
-
+import 'package:tes_gradle/features/presentation/provider/lapor_provider.dart'; // Import LaporProvider
 import 'package:tes_gradle/features/presentation/style/color.dart';
 import 'package:tes_gradle/features/presentation/router/approutes.dart';
 import 'package:tes_gradle/features/presentation/style/typography.dart';
+import 'package:tes_gradle/features/domain/entities/berita.dart';
+import 'package:tes_gradle/features/presentation/provider/berita_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,7 +26,28 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('Calling fetchUserData'); // Debug print statement
       Provider.of<UserProvider>(context, listen: false).fetchUserData();
+      _fetchUserReports(); // Fetch user reports
+      Provider.of<BeritaProvider>(context, listen: false).fetchBerita();
     });
+  }
+
+  Future<void> _fetchUserReports() async {
+    try {
+      final user = firebase_auth.FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        print('Fetching user reports for user ID: $userId');
+        await Provider.of<LaporProvider>(
+          context,
+          listen: false,
+        ).fetchUserReports(userId);
+        print('Fetched user reports successfully.');
+      } else {
+        print('No user logged in.');
+      }
+    } catch (e) {
+      print('Error fetching user reports: $e');
+    }
   }
 
   @override
@@ -42,35 +63,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color of the Scaffold
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          if (userProvider.isLoading) {
+      body: Consumer3<UserProvider, LaporProvider, BeritaProvider>(
+        builder: (context, userProvider, laporProvider, beritaProvider, child) {
+          if (userProvider.isLoading ||
+              laporProvider.isLoading ||
+              beritaProvider.isLoading) {
             return Center(child: CircularProgressIndicator());
           }
 
           final userData = userProvider.userData;
-          print('User Data: $userData'); // Debug print statement
-          print(
-            'photoProfile: ${userData?['photoProfile']}',
-          ); // Debug print statement
+          final userReports = laporProvider.userReports ?? [];
+          final beritaList = beritaProvider.beritaList ?? [];
+          print('User Data: $userData');
+          print('photoProfile: ${userData?['photoProfile']}');
+          print('Berita List: ${beritaProvider.beritaList}');
+          print('Is Loading: ${beritaProvider.isLoading}');
+          print('Error Message: ${beritaProvider.errorMessage}');
 
           return SingleChildScrollView(
             child: Stack(
               children: [
                 Column(
                   children: [
-                    // Replace AppBar with Container
                     Container(
-                      height: 140, // Adjust the height as needed
-                      color: AppColors.cce1f0,
-                      child: Center(
-                        child: Text(
-                          'Homepage',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      height: 130,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/Appbar.png'),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -80,16 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         80.0,
                         16.0,
                         16.0,
-                      ), // Adjust top padding to account for the positioned Card
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Remove the duplicate Card here
                           const SizedBox(height: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 4),
+                              SizedBox(height: 40),
                               Container(
                                 width: double.infinity,
                                 height: 42, // Set the height to 42
@@ -117,34 +136,41 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 40),
                           Text(
                             'Layanan Publik',
-                            style: AppTextStyles.paragraph_14_medium,
+                            style: AppTextStyles.paragraph_18_medium,
                           ),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               _buildServiceCard(
-                                Icons.report,
+                                'assets/images/megaphone-logo.png',
                                 'LaporRek',
                                 AppColors.white,
                                 onTap: () {
                                   context.go(AppRoutes.laporekBar);
                                 },
                               ),
-                              // Modify the background color for 'Panggilan Darurat'
+                              SizedBox(width: 3),
                               _buildServiceCard(
                                 Icons.sos,
                                 'Panggilan Darurat',
                                 Colors.red,
                                 backgroundColor: AppColors.white,
+                                onTap: () {
+                                  context.go(AppRoutes.panggilanOption);
+                                },
                               ),
+                              SizedBox(width: 3),
                               _buildServiceCard(
-                                Icons.camera_alt,
-                                'Pantau  Malang',
+                                'assets/images/cctv-logo.png',
+                                'Pantau Malang',
                                 AppColors.white,
+                                onTap: () {
+                                  context.go(AppRoutes.pantauMalang);
+                                },
                               ),
                             ],
                           ),
@@ -156,12 +182,74 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 8),
                           Container(
                             height: 150,
-                            color: AppColors.cce1f0,
-                            child: Center(
-                              child: Text(
-                                'Berita Terkini Placeholder',
-                                style: AppTextStyles.paragraph_18_regular,
-                              ),
+                            child: Builder(
+                              builder: (context) {
+                                if (beritaProvider.isLoading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                if (beritaProvider.errorMessage != null) {
+                                  return Center(
+                                    child: Text(
+                                      beritaProvider.errorMessage!,
+                                      style: AppTextStyles.paragraph_14_regular
+                                          .copyWith(color: Colors.red),
+                                    ),
+                                  );
+                                }
+                                final beritaList =
+                                    beritaProvider.beritaList ?? [];
+                                print(
+                                  'Berita List Length: ${beritaList.length}',
+                                ); // Debug log
+                                if (beritaList.isEmpty) {
+                                  print('No berita available'); // Debug log
+                                  return Center(
+                                    child: Text(
+                                      'Tidak ada berita terbaru',
+                                      style: AppTextStyles.paragraph_18_regular,
+                                    ),
+                                  );
+                                }
+                                return PageView.builder(
+                                  itemCount:
+                                      beritaList.length > 5
+                                          ? 5
+                                          : beritaList.length,
+                                  itemBuilder: (context, index) {
+                                    final berita = beritaList[index];
+                                    print(
+                                      'Rendering berita: ${berita.judul}',
+                                    ); // Debug log
+                                    return GestureDetector(
+                                      onTap: () {
+                                        print(
+                                          'Navigating to detail for: ${berita.judul}',
+                                        ); // Debug log
+                                        context.push(
+                                          AppRoutes.detailBerita,
+                                          extra: berita,
+                                        );
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(berita.gambar),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -169,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                // Adjust the position of the Card
+
                 Positioned(
                   top: 90,
                   left: 16,
@@ -241,10 +329,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     bottomLeft: Radius.circular(0.0),
                                   ),
                                 ),
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: AppColors.white,
-                                ),
                               ),
                             ),
                           ],
@@ -262,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListTile(
                             leading: Icon(Icons.report, color: AppColors.white),
                             title: Text(
-                              'Banyak Laporanmu 2',
+                              'Banyak Laporanmu : ${userReports.length}',
                               style: AppTextStyles.paragraph_14_bold.copyWith(
                                 color: AppColors.white,
                               ),
@@ -282,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildServiceCard(
-    IconData icon,
+    dynamic icon,
     String label,
     Color color, {
     Color backgroundColor = AppColors.c2a6892,
@@ -290,15 +374,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return Card(
       color: backgroundColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
-          width: 100,
-          height: 100,
+          width: 115,
+          height: 124,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: color),
+              icon is IconData
+                  ? Icon(icon, size: 40, color: color)
+                  : Image.asset(icon, width: 40, height: 40),
               const SizedBox(height: 8),
               Text(
                 label,

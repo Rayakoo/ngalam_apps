@@ -10,7 +10,6 @@ abstract class AuthRepository {
     
   );
   Future<void> sendPasswordResetEmail(String email);
-  Future<void> sendOtp(String email);
-  Future<void> verifyOtp(String email, String otp);
+ 
   Future<bool> accountExists(String email); 
 } 

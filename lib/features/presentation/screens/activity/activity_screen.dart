@@ -51,9 +51,25 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Activity'),
-        backgroundColor: AppColors.cce1f0,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/top bar.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            'Aktivitas',
+            style: AppTextStyles.heading_3_medium.copyWith(
+              color: AppColors.c020608,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
       ),
       body: Consumer<LaporProvider>(
         builder: (context, laporProvider, child) {
@@ -70,11 +86,29 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Laporanmu (${userReports.length})',
-                      style: AppTextStyles.heading_4_bold.copyWith(
-                        color: AppColors.c2a6892,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          'Laporanmu',
+                          style: AppTextStyles.heading_4_bold.copyWith(
+                            color: AppColors.c2a6892,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: AppColors.c2a6892,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${userReports.length}',
+                            style: AppTextStyles.heading_4_bold.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -87,14 +121,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     final laporan = userReports[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    DetailLaporanScreen(laporan: laporan),
-                          ),
-                        );
+                        context.push(AppRoutes.detailStatus, extra: laporan);
                       },
                       child: _buildLaporanCard(laporan),
                     );
@@ -110,86 +137,95 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   Widget _buildLaporanCard(Laporan laporan) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Column(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  laporan.kategoriLaporan,
-                  style: AppTextStyles.paragraph_14_medium.copyWith(
-                    color: AppColors.c2a6892,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Image.network(
-                  laporan.foto,
-                  height: 100,
-                  width: 130,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Text('Failed to load image');
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        laporan.id,
-                        style: AppTextStyles.paragraph_10_medium.copyWith(
-                          color: AppColors.c2a6892,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      laporan.kategoriLaporan,
+                      style: AppTextStyles.paragraph_14_medium.copyWith(
+                        color: AppColors.c2a6892,
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                     ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    16.0,
+                  ),
+                    child : Image.network(
+                      laporan.foto,
+                      height: 100,
+                      width: 130,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text('Failed to load image');
+                      },
+                    ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 26,
+                      ), // Increase space between Text widgets
                       Text(
                         _formatTimeAgo(laporan.timeStamp),
                         style: AppTextStyles.paragraph_14_regular.copyWith(
-                          color: AppColors.c3585ba,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        laporan.judulLaporan,
+                        style: AppTextStyles.heading_3_bold.copyWith(
+                          color: AppColors.c2a6892,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.go(AppRoutes.detailStatus, extra: laporan);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.c2a6892,
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Lihat Status',
+                          style: AppTextStyles.paragraph_14_medium.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    laporan.judulLaporan,
-                    style: AppTextStyles.heading_3_bold.copyWith(
-                      color: AppColors.c2a6892,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.go(AppRoutes.detailStatus, extra: laporan);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.c2a6892,
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 20,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    child: Text(
-                      'Lihat Status',
-                      style: AppTextStyles.paragraph_14_medium.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Text(
+                laporan.id,
+                style: AppTextStyles.paragraph_10_medium.copyWith(
+                  color: AppColors.c2a6892,
+                ),
               ),
             ),
           ],

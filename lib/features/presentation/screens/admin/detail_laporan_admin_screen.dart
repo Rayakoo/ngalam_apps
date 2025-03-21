@@ -1,5 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tes_gradle/features/domain/entities/laporan.dart';
@@ -31,6 +35,8 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   String _selectedStatus = '';
   String _imageUrl = '';
+  String? _uploadedImageUrl;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -64,6 +70,53 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
     await laporProvider.fetchKomentarByLaporanId(widget.laporan.id);
   }
 
+  Future<String> uploadImage(String filePath) async {
+    final url = Uri.parse('https://api.cloudinary.com/v1_1/dpbw0ztwl/upload');
+    final request =
+        http.MultipartRequest('POST', url)
+          ..fields['upload_preset'] = 'a5tgii2s'
+          ..files.add(
+            await http.MultipartFile.fromPath(
+              'file',
+              filePath,
+              contentType: MediaType('image', 'jpeg'),
+            ),
+          );
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.toBytes();
+      final responseString = String.fromCharCodes(responseData);
+      final jsonMap = jsonDecode(responseString);
+      return jsonMap['secure_url'];
+    } else {
+      throw Exception('Failed to upload image');
+    }
+  }
+
+  Future<void> _uploadPhoto() async {
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result != null && result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        final uploadedUrl = await uploadImage(filePath);
+        setState(() {
+          _uploadedImageUrl = uploadedUrl;
+        });
+      }
+    } catch (e) {
+      print('Error uploading photo: $e');
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
   Future<void> _updateStatus() async {
     showDialog(
       context: context,
@@ -78,14 +131,19 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
                   decoration: InputDecoration(labelText: 'Deskripsi Update'),
                 ),
                 const SizedBox(height: 8),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _imageUrl = value;
-                    });
-                  },
-                  decoration: InputDecoration(labelText: 'Image URL'),
+                ElevatedButton(
+                  onPressed: _uploadPhoto,
+                  child: const Text('Upload Image'),
                 ),
+                const SizedBox(height: 8),
+                if (_isUploading) const CircularProgressIndicator(),
+                if (_uploadedImageUrl != null)
+                  Image.network(
+                    _uploadedImageUrl!,
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
                 const SizedBox(height: 8),
                 DropdownButton<String>(
                   value: _selectedStatus.isEmpty ? null : _selectedStatus,
@@ -133,7 +191,7 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
                     laporanId: widget.laporan.id,
                     status: _selectedStatus,
                     description: _descriptionController.text,
-                    imageUrl: _imageUrl,
+                    imageUrl: _uploadedImageUrl ?? '',
                     timeStamp: DateTime.now(),
                   );
 
@@ -183,7 +241,7 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
                     waktu: DateTime.now(),
                     deskripsi:
                         'Status laporan "${widget.laporan.judulLaporan}" telah diperbarui menjadi $_selectedStatus.',
-                    userId: widget.laporan.uid, // Use the userId field
+                    userId: widget.laporan.uid,
                   );
 
                   await notificationProvider.addNotification(notification);
@@ -248,7 +306,10 @@ class _DetailLaporanAdminScreenState extends State<DetailLaporanAdminScreen> {
               },
             ),
             const SizedBox(height: 16),
-            _buildLaporanInfo('Lokasi Laporan', widget.laporan.lokasiKejadian),
+            _buildLaporanInfo(
+              'Lokasi Laporan',
+              'Lat: ${widget.laporan.lokasiKejadian.latitude}, Lng: ${widget.laporan.lokasiKejadian.longitude}',
+            ),
             _buildLaporanInfo(
               'Tanggal Pelaporan',
               _formatDate(widget.laporan.timeStamp),

@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
   smooth_page_indicator: ^1.1.0
 
 
@@ -45,11 +46,27 @@ dependencies:
   go_router: ^6.0.0
   email_auth: ^2.0.0
   intl: ^0.17.0
+  google_maps_flutter: ^2.10.1
+  geocoding: ^3.0.0
+  url_launcher: ^6.3.1
+  geolocator: ^13.0.3
+  fluttertoast: ^8.0.9  
+  fl_chart: ^0.70.2
+  cloudinary_flutter: ^1.0.0
+  cloudinary_url_gen: ^1.0.0
+  file_picker: ^9.2.1
+  
+  
 
 dev_dependencies:
+  flutter_native_splash: ^2.4.5
+  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/logoapps.png"
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -70,11 +87,39 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/orang.png
-    - assets/images/background-welcome.png
+    - .env
     - assets/images/bangunan.png
     - assets/images/orang-login.png
     - assets/images/profile_default.jpg
+    - assets/images/orang-berhasil.png
+    - assets/images/orang-lupa.png
+    - assets/images/Appbar.png
+    - assets/images/cctv-logo.png
+    - assets/images/megaphone-logo.png
+    - assets/images/top bar.png
+    - assets/images/orang-duduk.png
+    - assets/images/emoji1.png
+    - assets/images/emoji2.png
+    - assets/images/emoji3.png
+    - assets/images/emoji4.png
+    - assets/images/emoji0.png
+    - assets/images/pengumuman.png
+    - assets/images/berita.png
+    - assets/images/peringatan.png
+    - assets/images/ambulans.png
+    - assets/images/polisi.png
+    - assets/images/pemadam.png
+    - assets/images/layanan.png
+    - assets/images/pelayanan.png
+    - assets/images/keamanan.png 
+    - assets/images/infrastruktur.png
+    - assets/images/logoapps.png
+    - assets/images/logosplash.png
+    - assets/images/splash.png
+    - assets/images/testing.png
+    - assets/images/orang1.png
+    - assets/images/orang2.png
+    - assets/images/background.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -101,3 +146,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#FFFAFA"  
+  image: assets/images/logosplash.png 
+  android_12:
+    image: assets/images/logosplash.png
+    color: "#FFFAFA"
+  fullscreen: false  
+  android: true  
+  ios: true
